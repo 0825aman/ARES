@@ -53,6 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startSession = useCallback(async () => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'ares_session=ares_guest_session; path=/; max-age=86400; SameSite=Lax';
+    }
     try {
       const me = await auth.startSession();
       setUser(me);
@@ -63,9 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username: 'operator',
         role: 'admin',
       };
-      if (typeof document !== 'undefined') {
-        document.cookie = 'ares_session=ares_guest_session; path=/; max-age=86400; SameSite=Lax';
-      }
       setUser(guestUser);
       return guestUser;
     }
