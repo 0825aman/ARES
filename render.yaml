@@ -1,19 +1,16 @@
 services:
   # ==============================================================================
-  # 1. ARES Backend Web Service (FastAPI)
+  # 1. ARES Backend Web Service (FastAPI) — 100% FREE TIER
   # ==============================================================================
   - type: web
     name: ares-backend
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health/live
     autoDeploy: true
-    disk:
-      name: ares-storage
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
@@ -22,11 +19,11 @@ services:
           name: ares-postgres
           property: connectionString
       - key: CHECKPOINT_DB_URL
-        value: /var/data/ares_checkpoints.db
+        value: ./maar_checkpoints.db
       - key: UPLOAD_DIR
-        value: /var/data/uploads
+        value: ./uploads
       - key: EXPORT_DIR
-        value: /var/data/exports
+        value: ./exports
       - key: ALLOWED_ORIGINS
         fromService:
           type: web
@@ -62,11 +59,12 @@ services:
         sync: false
 
   # ==============================================================================
-  # 2. ARES Frontend Web Service (Next.js)
+  # 2. ARES Frontend Web Service (Next.js) — 100% FREE TIER
   # ==============================================================================
   - type: web
     name: ares-frontend
     runtime: node
+    plan: free
     rootDir: frontend
     buildCommand: npm ci && npm run build
     startCommand: npm start
@@ -85,7 +83,7 @@ services:
         value: "false"
 
 # ==============================================================================
-# 3. PostgreSQL Database
+# 3. PostgreSQL Database — 100% FREE TIER
 # ==============================================================================
 databases:
   - name: ares-postgres
