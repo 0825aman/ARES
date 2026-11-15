@@ -28,6 +28,7 @@ from app.services.evidence_normalizer import (
     normalize_document_chunk,
     chunk_text,
 )
+from app.guardrails.service import guardrails_service
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,14 @@ async def web_search(
     which decides whether to continue or fail the task.
     """
     from app.core.config import settings
+
+    # Enforce Tool Execution Guardrail
+    policy = guardrails_service.authorize_tool(
+        "researcher", "web_search", {"query": query, "num_results": num_results}
+    )
+    if not policy.is_allowed:
+        logger.warning("Guardrail blocked web_search: %s", policy.reason)
+        return []
 
     results = await search_provider.search(query, num_results=num_results)
     evidence: list[NormalizedEvidence] = []
@@ -88,6 +97,14 @@ async def fetch_web_content(
     - SSRF guard blocks the URL (private/local address)
     - Fetch times out or returns no content
     """
+    # Enforce Tool Execution Guardrail
+    policy = guardrails_service.authorize_tool(
+        "researcher", "fetch_web_content", {"url": url}
+    )
+    if not policy.is_allowed:
+        logger.warning("Guardrail blocked fetch_web_content: %s", policy.reason)
+        return None
+
     if not is_safe_url(url):
         logger.info("SSRF: blocked URL %s", url)
         return None

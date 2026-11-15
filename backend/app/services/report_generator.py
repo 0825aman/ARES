@@ -6,6 +6,7 @@ import re
 
 from app.services.evidence_normalizer import NormalizedEvidence
 from app.providers.llm import LLMProvider
+from app.guardrails.service import guardrails_service
 
 logger = logging.getLogger(__name__)
 
@@ -130,18 +131,29 @@ async def generate_report(
     for attempt in range(max_retries + 1):
         try:
             raw = await llm.complete(system_prompt, user_prompt)
-            parsed = _parse_llm_response(raw)
+            # Output Guardrails: redact leaked credentials/secrets before parsing
+            sanitized_raw, _ = guardrails_service.output.redact_secrets(raw)
+            parsed = _parse_llm_response(sanitized_raw)
+
+            exec_summary = parsed.get("executive_summary", "")
+            if isinstance(exec_summary, str):
+                exec_summary, _ = guardrails_service.output.redact_secrets(exec_summary)
+
+            limitations = parsed.get("limitations", "")
+            if isinstance(limitations, str):
+                limitations, _ = guardrails_service.output.redact_secrets(limitations)
+
             report = {
                 "research_question": research_question,
-                "executive_summary": parsed.get("executive_summary", ""),
+                "executive_summary": exec_summary,
                 "key_findings": json.dumps(parsed.get("key_findings", [])),
                 "evidence_used": json.dumps(_build_evidence_used(parsed, evidence_list)),
                 "observations": parsed.get("observations"),
                 "contradictions": parsed.get("contradictions"),
-                "limitations": parsed.get("limitations", ""),
+                "limitations": limitations,
                 "sources": json.dumps(_build_sources_list(evidence_list)),
             }
-            return report, raw
+            return report, sanitized_raw
         except Exception as exc:
             last_error = exc
             logger.warning("LLM call attempt %d failed: %s", attempt + 1, exc)

@@ -18,6 +18,7 @@ from app.services.document_service import document_service
 from app.services.research_workflow import run_research_workflow
 from app.models.report import ResearchReport
 from app.core.content_sanitizer import sanitize_research_question
+from app.guardrails.service import guardrails_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -59,8 +60,14 @@ async def start_run(
                     detail=f"Document {doc_id} not found or does not belong to this project."
                 )
 
-    # Sanitize research question
-    sanitized_question = sanitize_research_question(body.research_question)
+    # Validate and sanitize research question through Input Guardrails
+    validation = guardrails_service.validate_input(body.research_question, mask_pii=True)
+    if not validation.is_valid:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Input guardrail violation: {'; '.join(validation.violations)}"
+        )
+    sanitized_question = validation.sanitized_text
     if not sanitized_question:
         raise HTTPException(
             status_code=422,

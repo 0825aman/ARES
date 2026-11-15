@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.api.v1.routes import health, projects, documents, runs, sources, evidence, claims, reviews, citations
-from app.api.v1.routes import sse, approvals, exports, auth, tokens
+from app.api.v1.routes import sse, approvals, exports, auth, tokens, guardrails
 
 # Protected routers — business logic requiring active authentication in production
 protected_router = APIRouter()
@@ -20,6 +20,8 @@ protected_router.include_router(approvals.router, prefix="/projects", tags=["app
 protected_router.include_router(exports.router, prefix="/projects", tags=["exports"])
 # Token tracking and telemetry endpoints
 protected_router.include_router(tokens.router, prefix="/tokens", tags=["tokens"])
+# ARES Guardrails System endpoints
+protected_router.include_router(guardrails.router, prefix="/guardrails", tags=["guardrails"])
 
 # Auth router — public / self-authenticating (/auth/login, /auth/logout, /auth/me)
 auth_router = auth.router
