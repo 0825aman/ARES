@@ -1,0 +1,135 @@
+{
+  "_description": "Fixture 2 — Contradictions present. Tests contradiction detection metric. Two claims have contradicting evidence.",
+  "run_id": "fixture-run-02",
+  "report_id": "fixture-report-02",
+  "research_question": "Does intermittent fasting improve metabolic health markers in adults?",
+  "report": {
+    "executive_summary": "Intermittent fasting has been shown to improve insulin sensitivity and reduce fasting glucose levels in several randomized controlled trials. [SOURCE 1] However, some studies report no significant metabolic improvement compared to continuous caloric restriction. [SOURCE 2]",
+    "key_findings": [
+      "16:8 time-restricted eating reduced fasting insulin levels by 20% over 12 weeks. [SOURCE 1]",
+      "A meta-analysis found intermittent fasting and continuous caloric restriction produce equivalent weight loss. [SOURCE 2]",
+      "Alternate-day fasting improved LDL cholesterol by 15% in overweight adults. [SOURCE 3]",
+      "Intermittent fasting eliminates all metabolic benefit compared to standard diet according to a 2022 RCT. [SOURCE 4]"
+    ],
+    "limitations": "Most trials are short-term (< 6 months) with small sample sizes."
+  },
+  "evidence": [
+    {
+      "id": "ev-02-a",
+      "source_label": "[SOURCE 1]",
+      "content": "In a 12-week RCT, participants following 16:8 time-restricted eating experienced a 20% reduction in fasting insulin levels (p<0.01) compared to unrestricted eating controls.",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/if-insulin-rct",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-02-b",
+      "source_label": "[SOURCE 2]",
+      "content": "A systematic review and meta-analysis of 27 RCTs found no statistically significant difference in weight loss, BMI reduction, or metabolic markers between intermittent fasting and continuous caloric restriction (p=0.72).",
+      "evidence_type": "statistical",
+      "evidence_relationship": "qualifies",
+      "url": "https://www.example.com/if-meta-analysis",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-02-c",
+      "source_label": "[SOURCE 3]",
+      "content": "Overweight adults (BMI 27–35) following alternate-day fasting for 8 weeks showed a mean LDL cholesterol reduction of 15.2 mg/dL (p<0.05) compared to baseline.",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/adf-ldl-study",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-02-d",
+      "source_label": "[SOURCE 4]",
+      "content": "A 2022 RCT with 116 participants found no significant difference in insulin sensitivity, HbA1c, or fasting glucose between intermittent fasting and standard dietary advice groups after 6 months (all p>0.20).",
+      "evidence_type": "experimental",
+      "evidence_relationship": "contradicts",
+      "url": "https://www.example.com/if-no-benefit-rct",
+      "fetch_status": "success"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-02-a",
+      "claim_text": "16:8 time-restricted eating reduced fasting insulin levels by 20% over 12 weeks.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-02-a"]
+    },
+    {
+      "id": "claim-02-b",
+      "claim_text": "A meta-analysis found intermittent fasting and continuous caloric restriction produce equivalent weight loss.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-02-b"]
+    },
+    {
+      "id": "claim-02-c",
+      "claim_text": "Alternate-day fasting improved LDL cholesterol by 15% in overweight adults.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-02-c"]
+    },
+    {
+      "id": "claim-02-d",
+      "claim_text": "Intermittent fasting eliminates all metabolic benefit compared to standard diet.",
+      "claim_type": "factual",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "contradicted",
+      "expected_contradicting_evidence_ids": ["ev-02-a", "ev-02-c"],
+      "_note": "The claim is contradicted: ev-02-a shows insulin benefit, ev-02-c shows LDL benefit. The 'all benefit eliminated' claim overstates ev-02-d."
+    }
+  ],
+  "citations": [
+    {
+      "id": "cit-02-a",
+      "citation_key": "[SOURCE 1]",
+      "evidence_id": "ev-02-a",
+      "url": "https://www.example.com/if-insulin-rct",
+      "apa_formatted": "Smith, J., & Brown, K. (2021). Time-restricted eating and insulin sensitivity. Journal of Metabolic Research, 14(2), 45–58.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-02-b",
+      "citation_key": "[SOURCE 2]",
+      "evidence_id": "ev-02-b",
+      "url": "https://www.example.com/if-meta-analysis",
+      "apa_formatted": "Chen, L. et al. (2022). Intermittent fasting versus continuous caloric restriction: A systematic review. Nutrition Reviews, 80(4), 312–327.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-02-c",
+      "citation_key": "[SOURCE 3]",
+      "evidence_id": "ev-02-c",
+      "url": "https://www.example.com/adf-ldl-study",
+      "apa_formatted": "Patel, R., & Wilson, T. (2020). Alternate-day fasting and lipid profiles in overweight adults. Obesity Research, 28(6), 1102–1110.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-02-d",
+      "citation_key": "[SOURCE 4]",
+      "evidence_id": "ev-02-d",
+      "url": "https://www.example.com/if-no-benefit-rct",
+      "apa_formatted": "Anderson, M. et al. (2022). Metabolic effects of intermittent fasting: A randomized controlled trial. JAMA Internal Medicine, 182(9), 953–962.",
+      "is_verified": true
+    }
+  ],
+  "expected_metrics": {
+    "evidence_coverage": 1.0,
+    "citation_verified_rate": 1.0,
+    "unsupported_claim_count": 0,
+    "contradiction_count": 1,
+    "forced_approval": false,
+    "_labeled_contradictions": ["claim-02-d"]
+  }
+}

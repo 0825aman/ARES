@@ -1,0 +1,136 @@
+{
+  "_description": "Fixture 5 — Citation validation edge cases. Tests unverified citations, missing evidence linkage, and partially verified bibliography.",
+  "run_id": "fixture-run-05",
+  "report_id": "fixture-report-05",
+  "research_question": "What are the key mechanisms by which exercise reduces cardiovascular disease risk?",
+  "report": {
+    "executive_summary": "Regular aerobic exercise reduces cardiovascular disease risk through multiple mechanisms including improved endothelial function, reduced systemic inflammation, and beneficial changes to lipid profiles. [SOURCE 1] [SOURCE 2]",
+    "key_findings": [
+      "150 minutes per week of moderate-intensity exercise reduces cardiovascular mortality risk by 35%. [SOURCE 1]",
+      "Aerobic exercise increases HDL cholesterol by 3–6% and reduces LDL particle size in previously sedentary adults. [SOURCE 2]",
+      "Exercise reduces C-reactive protein (CRP) levels by 20–30% in individuals with elevated baseline inflammation. [SOURCE 3]",
+      "High-intensity interval training produces equivalent cardiovascular benefits to moderate continuous exercise in less total time. [SOURCE 4]"
+    ],
+    "limitations": "Optimal exercise dose varies by individual health status and age. Most studies are observational."
+  },
+  "evidence": [
+    {
+      "id": "ev-05-a",
+      "source_label": "[SOURCE 1]",
+      "content": "A meta-analysis of 36 cohort studies (n=1.2 million) found that individuals meeting the WHO physical activity guidelines of 150 min/week moderate exercise experienced 35% lower cardiovascular mortality vs. inactive individuals (RR 0.65, 95% CI 0.59–0.72).",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/exercise-cv-meta",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-05-b",
+      "source_label": "[SOURCE 2]",
+      "content": "Systematic review of 40 RCTs found aerobic exercise training increased HDL-C by a mean of 4.6% (95% CI 2.6–6.5%) and reduced small, dense LDL particle count by 8% in previously sedentary adults.",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/exercise-lipids",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-05-c",
+      "source_label": "[SOURCE 3]",
+      "content": "Exercise intervention studies report 20–35% reductions in CRP levels among participants with baseline CRP > 3 mg/L following 12–24 weeks of regular moderate aerobic exercise.",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/exercise-crp",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-05-d",
+      "source_label": "[SOURCE 4]",
+      "content": "A 12-week RCT comparing HIIT (3×20 min/week) to moderate continuous exercise (5×30 min/week) found equivalent VO2max improvements (HIIT: +9.3%, MICT: +9.1%, p=0.91) and similar lipid profile changes.",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": null,
+      "fetch_status": "fetch_failed",
+      "_note": "URL unavailable — evidence was extracted from document chunk. Citation is_verified=false due to missing URL."
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-05-a",
+      "claim_text": "150 minutes per week of moderate-intensity exercise reduces cardiovascular mortality risk by 35%.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-05-a"]
+    },
+    {
+      "id": "claim-05-b",
+      "claim_text": "Aerobic exercise increases HDL cholesterol by 3–6% and reduces LDL particle size in previously sedentary adults.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-05-b"]
+    },
+    {
+      "id": "claim-05-c",
+      "claim_text": "Exercise reduces C-reactive protein (CRP) levels by 20–30% in individuals with elevated baseline inflammation.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-05-c"]
+    },
+    {
+      "id": "claim-05-d",
+      "claim_text": "High-intensity interval training produces equivalent cardiovascular benefits to moderate continuous exercise in less total time.",
+      "claim_type": "factual",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-05-d"]
+    }
+  ],
+  "citations": [
+    {
+      "id": "cit-05-a",
+      "citation_key": "[SOURCE 1]",
+      "evidence_id": "ev-05-a",
+      "url": "https://www.example.com/exercise-cv-meta",
+      "apa_formatted": "Wahid, A. et al. (2016). Quantifying the association between physical activity and cardiovascular disease and diabetes. Journal of the American Heart Association, 5(9), e002495.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-05-b",
+      "citation_key": "[SOURCE 2]",
+      "evidence_id": "ev-05-b",
+      "url": "https://www.example.com/exercise-lipids",
+      "apa_formatted": "Mann, S., Beedie, C., & Jimenez, A. (2014). Differential effects of aerobic exercise, resistance training, and combined exercise modalities on cholesterol and the lipid profile. Sports Medicine, 44(2), 211–221.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-05-c",
+      "citation_key": "[SOURCE 3]",
+      "evidence_id": "ev-05-c",
+      "url": "https://www.example.com/exercise-crp",
+      "apa_formatted": "Kasapis, C., & Thompson, P. D. (2005). The effects of physical activity on serum C-reactive protein and inflammatory markers. Journal of the American College of Cardiology, 45(10), 1563–1569.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-05-d",
+      "citation_key": "[SOURCE 4]",
+      "evidence_id": "ev-05-d",
+      "url": null,
+      "apa_formatted": null,
+      "is_verified": false,
+      "_note": "is_verified=false: URL unavailable, no DOI, no APA formatting possible from document source alone."
+    }
+  ],
+  "expected_metrics": {
+    "evidence_coverage": 1.0,
+    "citation_verified_rate": 0.75,
+    "unsupported_claim_count": 0,
+    "contradiction_count": 0,
+    "forced_approval": false,
+    "_partial_verification_note": "cit-05-d is_verified=false due to missing URL. 3/4 citations verified = 75%."
+  }
+}

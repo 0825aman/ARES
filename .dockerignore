@@ -1,0 +1,13 @@
+node_modules
+.next
+backend/.venv
+frontend/node_modules
+frontend/.next
+backend/uploads
+backend/exports
+*.db
+*.sqlite
+.env
+.env.local
+.git
+.pytest_cache

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "Q001",
+    "category": "technology",
+    "question": "What are the primary scaling bottlenecks in Transformer neural architectures, and what architectural variations address them?",
+    "difficulty": "hard",
+    "expected_source_domains": ["arxiv.org", "semanticscholar.org"],
+    "expected_claim_types": ["computational_complexity", "memory_bandwidth", "attention_sparsity"],
+    "notes": "Covers linear attention, FlashAttention, sliding window attention, and state-space models."
+  },
+  {
+    "id": "Q002",
+    "category": "science",
+    "question": "How do room-temperature ambient-pressure superconductor candidates compare in verified experimental replication attempts?",
+    "difficulty": "medium",
+    "expected_source_domains": ["nature.com", "arxiv.org", "science.org"],
+    "expected_claim_types": ["experimental_replication", "meissner_effect", "resistance_measurement"],
+    "notes": "Focuses on LK-99, cuprates, and nickelates verification history."
+  },
+  {
+    "id": "Q003",
+    "category": "healthcare",
+    "question": "What is the clinical evidence regarding the long-term metabolic outcomes of GLP-1 receptor agonists compared to bariatric surgery?",
+    "difficulty": "hard",
+    "expected_source_domains": ["nejm.org", "thelancet.com", "nih.gov"],
+    "expected_claim_types": ["clinical_trial", "weight_regain", "cardiovascular_endpoints"],
+    "notes": "Compares semaglutide/tirzepatide against Roux-en-Y and sleeve gastrectomy."
+  },
+  {
+    "id": "Q004",
+    "category": "economics",
+    "question": "What are the macroeconomic trade-offs between universal basic income programs and targeted conditional cash transfers in developing economies?",
+    "difficulty": "medium",
+    "expected_source_domains": ["worldbank.org", "nber.org", "imf.org"],
+    "expected_claim_types": ["fiscal_cost", "labor_supply", "poverty_headcount"],
+    "notes": "Considers GiveDirectly pilots, Bolsa Família, and fiscal sustainability."
+  },
+  {
+    "id": "Q005",
+    "category": "history",
+    "question": "How did logistics and supply line failures influence the outcome of the Gallipoli campaign in 1915?",
+    "difficulty": "medium",
+    "expected_source_domains": ["britannica.com", "nationalarchives.gov.uk"],
+    "expected_claim_types": ["amphibious_supply", "water_shortage", "casualty_rates"],
+    "notes": "Examines trench logistics, naval support, and terrain obstacles."
+  },
+  {
+    "id": "Q006",
+    "category": "society",
+    "question": "How does algorithmic content moderation impact freedom of expression across different legal jurisdictions?",
+    "difficulty": "hard",
+    "expected_source_domains": ["eff.org", "un.org", "harvard.edu"],
+    "expected_claim_types": ["over_moderation", "first_amendment", "digital_services_act"],
+    "notes": "Compares US Section 230 and EU Digital Services Act frameworks."
+  },
+  {
+    "id": "Q007",
+    "category": "science",
+    "question": "What are the latest astrophysical observations from JWST concerning early galaxy formation and cosmological tension with Lambda-CDM?",
+    "difficulty": "hard",
+    "expected_source_domains": ["nasa.gov", "arxiv.org", "stsci.edu"],
+    "expected_claim_types": ["redshift_measurements", "stellar_mass_density", "hubble_tension"],
+    "notes": "High redshift galaxy counts at z > 10 and cosmological implications."
+  },
+  {
+    "id": "Q008",
+    "category": "technology",
+    "question": "How does post-quantum cryptography standardization progress with NIST lattice-based versus stateful hash-based signature algorithms?",
+    "difficulty": "hard",
+    "expected_source_domains": ["nist.gov", "iacr.org"],
+    "expected_claim_types": ["key_size", "quantum_security_level", "implementation_attacks"],
+    "notes": "ML-KEM, ML-DSA, SLH-DSA, and XMSS/LMS transition timelines."
+  },
+  {
+    "id": "Q009",
+    "category": "healthcare",
+    "question": "What is the comparative efficacy of mRNA vaccines versus viral vector platforms in inducing durable T-cell immunity?",
+    "difficulty": "medium",
+    "expected_source_domains": ["nih.gov", "cdc.gov", "nature.com"],
+    "expected_claim_types": ["antibody_titer", "cd8_t_cell_response", "immune_waning"],
+    "notes": "Analysis of immunogenicity metrics and memory persistence."
+  },
+  {
+    "id": "Q010",
+    "category": "economics",
+    "question": "What are the structural impacts of central bank digital currencies (CBDCs) on commercial banking liquidity and fractional reserve lending?",
+    "difficulty": "hard",
+    "expected_source_domains": ["bis.org", "federalreserve.gov", "ecb.europa.eu"],
+    "expected_claim_types": ["disintermediation", "run_risk", "policy_transmission"],
+    "notes": "Covers two-tier CBDC models, holding limits, and credit availability."
+  }
+]

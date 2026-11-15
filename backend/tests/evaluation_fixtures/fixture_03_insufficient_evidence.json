@@ -1,0 +1,100 @@
+{
+  "_description": "Fixture 3 — Insufficient evidence. Tests unsupported claim rate metric. Two claims have no matching evidence.",
+  "run_id": "fixture-run-03",
+  "report_id": "fixture-report-03",
+  "research_question": "What is the economic impact of remote work adoption since 2020?",
+  "report": {
+    "executive_summary": "The shift to remote work since 2020 has significantly altered urban commercial real estate markets and worker productivity patterns. [SOURCE 1] Productivity outcomes remain contested across industries. [SOURCE 2]",
+    "key_findings": [
+      "Office vacancy rates in major US cities reached 19.6% in Q3 2023, the highest since 1990. [SOURCE 1]",
+      "Remote workers report 13% higher productivity on average according to Stanford research. [SOURCE 2]",
+      "Remote work has permanently eliminated all gender pay gap differences in knowledge work.",
+      "Fully remote companies have 40% lower employee turnover than in-office companies."
+    ],
+    "limitations": "Remote work data post-2020 covers an atypical period of pandemic disruption."
+  },
+  "evidence": [
+    {
+      "id": "ev-03-a",
+      "source_label": "[SOURCE 1]",
+      "content": "US office vacancy rates reached 19.6% nationally in Q3 2023, the highest level since 1990, driven by hybrid and remote work adoption reducing demand for commercial space (CBRE Research, 2023).",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.cbre.com/insights/reports/us-office-figures-q3-2023",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-03-b",
+      "source_label": "[SOURCE 2]",
+      "content": "A Stanford University study of 16,000 workers over 9 months found that remote workers were 13% more productive than their in-office counterparts, attributed to fewer breaks, sick days, and a quieter work environment.",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": "https://nbloom.people.stanford.edu/sites/g/files/sbiybj4746/f/wfh.pdf",
+      "fetch_status": "success"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-03-a",
+      "claim_text": "Office vacancy rates in major US cities reached 19.6% in Q3 2023, the highest since 1990.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-03-a"]
+    },
+    {
+      "id": "claim-03-b",
+      "claim_text": "Remote workers report 13% higher productivity on average according to Stanford research.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-03-b"]
+    },
+    {
+      "id": "claim-03-c",
+      "claim_text": "Remote work has permanently eliminated all gender pay gap differences in knowledge work.",
+      "claim_type": "factual",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "insufficient_evidence",
+      "_note": "No evidence collected for this claim — no [SOURCE N] reference. Should be insufficient_evidence."
+    },
+    {
+      "id": "claim-03-d",
+      "claim_text": "Fully remote companies have 40% lower employee turnover than in-office companies.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "insufficient_evidence",
+      "_note": "No source cited for this specific statistic — no [SOURCE N] reference."
+    }
+  ],
+  "citations": [
+    {
+      "id": "cit-03-a",
+      "citation_key": "[SOURCE 1]",
+      "evidence_id": "ev-03-a",
+      "url": "https://www.cbre.com/insights/reports/us-office-figures-q3-2023",
+      "apa_formatted": "CBRE Research. (2023). US Office Figures Q3 2023. CBRE Group.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-03-b",
+      "citation_key": "[SOURCE 2]",
+      "evidence_id": "ev-03-b",
+      "url": "https://nbloom.people.stanford.edu/sites/g/files/sbiybj4746/f/wfh.pdf",
+      "apa_formatted": "Bloom, N., Liang, J., Roberts, J., & Ying, Z. J. (2015). Does working from home work? Evidence from a Chinese experiment. The Quarterly Journal of Economics, 130(1), 165–218.",
+      "is_verified": true
+    }
+  ],
+  "expected_metrics": {
+    "evidence_coverage": 0.5,
+    "citation_verified_rate": 1.0,
+    "unsupported_claim_count": 2,
+    "contradiction_count": 0,
+    "forced_approval": false,
+    "_labeled_insufficient": ["claim-03-c", "claim-03-d"]
+  }
+}

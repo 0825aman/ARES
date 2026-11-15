@@ -1,0 +1,120 @@
+{
+  "_description": "Fixture 4 — Mixed: some supported, some contradicted, some insufficient. Tests all metrics together.",
+  "run_id": "fixture-run-04",
+  "report_id": "fixture-report-04",
+  "research_question": "What is the effectiveness of large language models in medical diagnosis support?",
+  "report": {
+    "executive_summary": "Large language models have demonstrated strong performance on medical licensing examinations and clinical reasoning benchmarks. [SOURCE 1] However, performance varies significantly by specialty and may not translate to real-world clinical settings. [SOURCE 2]",
+    "key_findings": [
+      "GPT-4 achieved 86% accuracy on the USMLE Step 1 exam, surpassing the passing threshold of 60%. [SOURCE 1]",
+      "LLMs outperform human physicians in diagnostic accuracy across all medical specialties. [SOURCE 2]",
+      "A prospective clinical trial found LLM-assisted diagnosis reduced misdiagnosis rates by 12% in primary care. [SOURCE 3]",
+      "LLMs can identify rare disease diagnoses in cases where physicians initially missed the diagnosis."
+    ],
+    "limitations": "Most benchmarks use historical data. Real-world clinical trials are limited and short-term."
+  },
+  "evidence": [
+    {
+      "id": "ev-04-a",
+      "source_label": "[SOURCE 1]",
+      "content": "GPT-4 achieved a score of 86.7% on the USMLE Step 1 examination, well above the approximate 60% passing score, demonstrating strong medical knowledge acquisition. (Nori et al., 2023, Microsoft Research)",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": "https://arxiv.org/abs/2303.13375",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-04-b",
+      "source_label": "[SOURCE 2]",
+      "content": "Systematic review of 31 studies comparing LLM and physician diagnostic accuracy found LLMs outperformed physicians in dermatology and radiology but underperformed in internal medicine, cardiology, and rare disease diagnosis by 15–22%.",
+      "evidence_type": "statistical",
+      "evidence_relationship": "contradicts",
+      "url": "https://www.example.com/llm-physician-comparison",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-04-c",
+      "source_label": "[SOURCE 3]",
+      "content": "A prospective trial across 8 primary care clinics found AI-assisted diagnosis reduced diagnostic error rates from 21% to 18.5%, a statistically significant 12% relative reduction (p=0.03), with no significant difference in patient satisfaction.",
+      "evidence_type": "experimental",
+      "evidence_relationship": "supports",
+      "url": "https://www.example.com/llm-clinical-trial",
+      "fetch_status": "success"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-04-a",
+      "claim_text": "GPT-4 achieved 86% accuracy on the USMLE Step 1 exam, surpassing the passing threshold of 60%.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-04-a"]
+    },
+    {
+      "id": "claim-04-b",
+      "claim_text": "LLMs outperform human physicians in diagnostic accuracy across all medical specialties.",
+      "claim_type": "factual",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "contradicted",
+      "expected_contradicting_evidence_ids": ["ev-04-b"],
+      "_note": "ev-04-b directly contradicts the 'all specialties' claim — LLMs underperform in internal medicine and cardiology."
+    },
+    {
+      "id": "claim-04-c",
+      "claim_text": "A prospective clinical trial found LLM-assisted diagnosis reduced misdiagnosis rates by 12% in primary care.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-04-c"]
+    },
+    {
+      "id": "claim-04-d",
+      "claim_text": "LLMs can identify rare disease diagnoses in cases where physicians initially missed the diagnosis.",
+      "claim_type": "factual",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "insufficient_evidence",
+      "_note": "No source cited. The evidence in ev-04-b actually says LLMs underperform in rare disease — no direct supporting evidence."
+    }
+  ],
+  "citations": [
+    {
+      "id": "cit-04-a",
+      "citation_key": "[SOURCE 1]",
+      "evidence_id": "ev-04-a",
+      "url": "https://arxiv.org/abs/2303.13375",
+      "doi": "10.48550/arXiv.2303.13375",
+      "apa_formatted": "Nori, H., King, N., McKinney, S. M., Carignan, D., & Horvitz, E. (2023). Capabilities of GPT-4 on Medical Challenge Problems. arXiv preprint arXiv:2303.13375.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-04-b",
+      "citation_key": "[SOURCE 2]",
+      "evidence_id": "ev-04-b",
+      "url": "https://www.example.com/llm-physician-comparison",
+      "apa_formatted": "Taylor, A., & Martinez, C. (2023). LLM versus physician diagnostic accuracy: A systematic review. npj Digital Medicine, 6(1), 89.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-04-c",
+      "citation_key": "[SOURCE 3]",
+      "evidence_id": "ev-04-c",
+      "url": "https://www.example.com/llm-clinical-trial",
+      "apa_formatted": "Johnson, R. et al. (2023). AI-assisted diagnosis in primary care: A prospective trial. The Lancet Digital Health, 5(8), e501–e509.",
+      "is_verified": true
+    }
+  ],
+  "expected_metrics": {
+    "evidence_coverage": 0.75,
+    "citation_verified_rate": 1.0,
+    "unsupported_claim_count": 1,
+    "contradiction_count": 1,
+    "forced_approval": false,
+    "_labeled_contradictions": ["claim-04-b"],
+    "_labeled_insufficient": ["claim-04-d"]
+  }
+}

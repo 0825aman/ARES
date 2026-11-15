@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: maar-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/maar.db
+      - CHECKPOINT_DB_URL=/app/data/maar_checkpoints.db
+      - UPLOAD_DIR=/app/uploads
+      - EXPORT_DIR=/app/exports
+      - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - maar-db:/app/data
+      - maar-uploads:/app/uploads
+      - maar-exports:/app/exports
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: maar-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  maar-db:
+    name: maar-db
+  maar-uploads:
+    name: maar-uploads
+  maar-exports:
+    name: maar-exports

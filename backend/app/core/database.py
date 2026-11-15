@@ -1,0 +1,65 @@
+from collections.abc import AsyncGenerator
+
+from sqlalchemy import event
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    AsyncEngine,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from app.core.config import settings
+
+
+def configure_sqlite_pragmas(
+    sync_engine,
+    wal_mode: bool,
+    busy_timeout_ms: int,
+    enforce_foreign_keys: bool = True,
+) -> None:
+    """Register a SQLAlchemy 'connect' listener that sets SQLite PRAGMAs.
+
+    Call this on any sync engine (or async engine's .sync_engine) that
+    connects to SQLite — including test engines.
+
+    - PRAGMA journal_mode=WAL  : allows concurrent reads during writes.
+    - PRAGMA foreign_keys=ON   : SQLite ignores FK constraints without this.
+    - PRAGMA busy_timeout=N    : wait N ms on a locked DB instead of failing.
+
+    Args:
+        sync_engine: SQLAlchemy sync engine (or AsyncEngine.sync_engine).
+        wal_mode: Enable WAL journal mode (no-op on :memory: databases).
+        busy_timeout_ms: Milliseconds to wait on a locked DB before failing.
+        enforce_foreign_keys: Set PRAGMA foreign_keys=ON. Disable in test
+            environments where fixtures insert partial FK data.
+    """
+    @event.listens_for(sync_engine, "connect")
+    def _set_pragmas(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        if wal_mode:
+            cursor.execute("PRAGMA journal_mode=WAL")
+        if enforce_foreign_keys:
+            cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.execute(f"PRAGMA busy_timeout={busy_timeout_ms}")
+        cursor.close()
+
+
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    echo=(settings.APP_ENV == "development"),
+)
+
+# Apply PRAGMAs to the production engine when connecting to SQLite
+if "sqlite" in settings.DATABASE_URL:
+    configure_sqlite_pragmas(
+        engine.sync_engine,
+        wal_mode=settings.DB_WAL_MODE,
+        busy_timeout_ms=settings.DB_BUSY_TIMEOUT_MS,
+    )
+
+AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
+        yield session

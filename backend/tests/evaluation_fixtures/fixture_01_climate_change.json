@@ -1,0 +1,133 @@
+{
+  "_description": "Fixture 1 — Climate Change baseline. Well-supported claims with clear evidence. No contradictions.",
+  "run_id": "fixture-run-01",
+  "report_id": "fixture-report-01",
+  "research_question": "What are the primary drivers of global average temperature increase since 1850?",
+  "report": {
+    "executive_summary": "Global average temperatures have risen approximately 1.1°C since pre-industrial times, driven primarily by greenhouse gas emissions from fossil fuel combustion and deforestation. [SOURCE 1] Scientific consensus on anthropogenic climate change is overwhelming. [SOURCE 2]",
+    "key_findings": [
+      "CO2 concentrations have increased from 280 ppm pre-industrial to over 420 ppm in 2023. [SOURCE 1]",
+      "The 2011–2020 decade was the warmest on record according to WMO data. [SOURCE 2]",
+      "Deforestation contributes approximately 10% of annual global greenhouse gas emissions. [SOURCE 3]",
+      "Methane emissions from agriculture and livestock account for 14.5% of global emissions. [SOURCE 4]"
+    ],
+    "limitations": "Temperature records before 1850 rely on proxy data with higher uncertainty."
+  },
+  "evidence": [
+    {
+      "id": "ev-01-a",
+      "source_label": "[SOURCE 1]",
+      "content": "Atmospheric CO2 concentration reached 421 ppm in May 2023, the highest in over 800,000 years of ice core records. Pre-industrial baseline was approximately 280 ppm.",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.noaa.gov/news-release/carbon-dioxide-now-more-than-50-higher-than-pre-industrial-levels",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-01-b",
+      "source_label": "[SOURCE 2]",
+      "content": "The 2011–2020 decade was the warmest decade ever recorded globally, with a global mean temperature 1.1°C above the pre-industrial (1850–1900) period. (WMO Global Climate Report 2020)",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://library.wmo.int/doc_num.php?explnum_id=10618",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-01-c",
+      "source_label": "[SOURCE 3]",
+      "content": "Land-use change including deforestation accounts for approximately 10–12% of total annual anthropogenic CO2-equivalent emissions according to IPCC AR6.",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.ipcc.ch/report/ar6/wg3/",
+      "fetch_status": "success"
+    },
+    {
+      "id": "ev-01-d",
+      "source_label": "[SOURCE 4]",
+      "content": "Agriculture, Forestry and Other Land Use (AFOLU) emissions, of which livestock enteric fermentation is the largest component, contribute 14.5% of global greenhouse gas emissions. (FAO 2013 Tackling Climate Change Through Livestock)",
+      "evidence_type": "statistical",
+      "evidence_relationship": "supports",
+      "url": "https://www.fao.org/news/story/en/item/197623/icode/",
+      "fetch_status": "success"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-01-a",
+      "claim_text": "CO2 concentrations have increased from 280 ppm pre-industrial to over 420 ppm in 2023.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-01-a"]
+    },
+    {
+      "id": "claim-01-b",
+      "claim_text": "The 2011–2020 decade was the warmest on record.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": true,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-01-b"]
+    },
+    {
+      "id": "claim-01-c",
+      "claim_text": "Deforestation contributes approximately 10% of annual global greenhouse gas emissions.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-01-c"]
+    },
+    {
+      "id": "claim-01-d",
+      "claim_text": "Methane emissions from agriculture and livestock account for 14.5% of global emissions.",
+      "claim_type": "statistical",
+      "originating_section": "key_findings",
+      "is_high_impact": false,
+      "expected_status": "supported",
+      "expected_supporting_evidence_ids": ["ev-01-d"]
+    }
+  ],
+  "citations": [
+    {
+      "id": "cit-01-a",
+      "citation_key": "[SOURCE 1]",
+      "evidence_id": "ev-01-a",
+      "url": "https://www.noaa.gov/news-release/carbon-dioxide-now-more-than-50-higher-than-pre-industrial-levels",
+      "apa_formatted": "NOAA. (2023). Carbon dioxide now more than 50% higher than pre-industrial levels. National Oceanic and Atmospheric Administration.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-01-b",
+      "citation_key": "[SOURCE 2]",
+      "evidence_id": "ev-01-b",
+      "url": "https://library.wmo.int/doc_num.php?explnum_id=10618",
+      "apa_formatted": "World Meteorological Organization. (2020). State of the Global Climate 2020. WMO.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-01-c",
+      "citation_key": "[SOURCE 3]",
+      "evidence_id": "ev-01-c",
+      "url": "https://www.ipcc.ch/report/ar6/wg3/",
+      "apa_formatted": "IPCC. (2022). Climate Change 2022: Mitigation of Climate Change. IPCC AR6 Working Group III.",
+      "is_verified": true
+    },
+    {
+      "id": "cit-01-d",
+      "citation_key": "[SOURCE 4]",
+      "evidence_id": "ev-01-d",
+      "url": "https://www.fao.org/news/story/en/item/197623/icode/",
+      "apa_formatted": "FAO. (2013). Tackling Climate Change Through Livestock. Food and Agriculture Organization of the United Nations.",
+      "is_verified": true
+    }
+  ],
+  "expected_metrics": {
+    "evidence_coverage": 1.0,
+    "citation_verified_rate": 1.0,
+    "unsupported_claim_count": 0,
+    "contradiction_count": 0,
+    "forced_approval": false
+  }
+}
