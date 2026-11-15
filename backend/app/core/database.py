@@ -1,4 +1,6 @@
 from collections.abc import AsyncGenerator
+import ssl
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import (
@@ -47,9 +49,19 @@ def configure_sqlite_pragmas(
 def get_async_database_url(url: str) -> str:
     """Normalize Render/PostgreSQL connection string for SQLAlchemy asyncpg."""
     if url.startswith("postgres://"):
-        return url.replace("postgres://", "postgresql+asyncpg://", 1)
-    if url.startswith("postgresql://") and "+asyncpg" not in url:
-        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgresql://") and "+asyncpg" not in url:
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    # Clean query parameters that asyncpg doesn't support as kwargs (e.g. sslmode)
+    if "postgresql+asyncpg://" in url:
+        parsed = urlparse(url)
+        if parsed.query:
+            query_dict = parse_qs(parsed.query)
+            query_dict.pop("sslmode", None)
+            new_query = urlencode(query_dict, doseq=True)
+            url = urlunparse(parsed._replace(query=new_query))
+
     return url
 
 
@@ -68,10 +80,25 @@ def get_sync_database_url(url: str) -> str:
 
 db_url = get_async_database_url(settings.DATABASE_URL)
 
-engine = create_async_engine(
-    db_url,
-    echo=(settings.APP_ENV == "development"),
-)
+connect_args = {}
+if "postgresql+asyncpg" in db_url:
+    # On remote PostgreSQL (e.g. Render, Neon, Supabase), configure SSL context
+    if "localhost" not in db_url and "127.0.0.1" not in db_url:
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        connect_args["ssl"] = ssl_ctx
+
+engine_kwargs = {
+    "echo": (settings.APP_ENV == "development"),
+}
+if connect_args:
+    engine_kwargs["connect_args"] = connect_args
+if "postgresql" in db_url:
+    engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["pool_recycle"] = 300
+
+engine = create_async_engine(db_url, **engine_kwargs)
 
 # Apply PRAGMAs to the production engine when connecting to SQLite
 if "sqlite" in db_url:

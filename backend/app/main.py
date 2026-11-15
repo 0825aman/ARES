@@ -111,19 +111,45 @@ async def _recover_stuck_runs() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Apply all pending database migrations
-    _run_alembic_upgrade()
-    # Recover any runs/tasks that were interrupted by a server restart
-    await _recover_stuck_runs()
-    # Seed admin user if none exists (reads ADMIN_USERNAME / ADMIN_PASSWORD_HASH)
-    async with AsyncSessionLocal() as db:
-        from app.services import auth_service
-        await auth_service.seed_admin_user(db)
-    # Create upload and export directories if they don't exist
-    import pathlib
-    pathlib.Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
-    pathlib.Path(settings.EXPORT_DIR).mkdir(parents=True, exist_ok=True)
+    # Phase 1: Apply all pending database migrations / schema creation
+    logger.info("Starting database schema migration / verification...")
+    try:
+        _run_alembic_upgrade()
+        logger.info("Database schema migration / verification completed successfully.")
+    except Exception as exc:
+        logger.exception("CRITICAL: Database migration failed: %s", exc)
+        raise
+
+    # Phase 2: Recover any runs/tasks that were interrupted by a server restart
+    try:
+        logger.info("Starting stuck runs recovery...")
+        await _recover_stuck_runs()
+        logger.info("Stuck runs recovery completed.")
+    except Exception as exc:
+        logger.warning("Non-fatal: Stuck runs recovery encountered an error: %s", exc, exc_info=True)
+
+    # Phase 3: Seed admin user if none exists (reads ADMIN_USERNAME / ADMIN_PASSWORD_HASH)
+    try:
+        logger.info("Starting admin user seeding check...")
+        async with AsyncSessionLocal() as db:
+            from app.services import auth_service
+            await auth_service.seed_admin_user(db)
+        logger.info("Admin user seeding check completed.")
+    except Exception as exc:
+        logger.warning("Non-fatal: Admin user seeding encountered an error: %s", exc, exc_info=True)
+
+    # Phase 4: Create upload and export directories if they don't exist
+    try:
+        import pathlib
+        pathlib.Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(settings.EXPORT_DIR).mkdir(parents=True, exist_ok=True)
+        logger.info("Storage directories initialized: %s, %s", settings.UPLOAD_DIR, settings.EXPORT_DIR)
+    except Exception as exc:
+        logger.warning("Directory initialization warning: %s", exc)
+
+    logger.info("ARES API startup sequence completed successfully. Server is ready to receive requests.")
     yield
+    logger.info("ARES API server shutdown initiated.")
 
 
 app = FastAPI(
