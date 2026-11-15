@@ -4,6 +4,7 @@ import ssl
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy import event
+from sqlalchemy.types import DateTime as SqlDateTime
 from sqlalchemy.dialects.postgresql.asyncpg import AsyncpgDateTime
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -35,6 +36,7 @@ def _patch_asyncpg_datetime() -> None:
             return value
         return process
 
+    SqlDateTime.bind_processor = _bind_processor
     AsyncpgDateTime.bind_processor = _bind_processor
     AsyncpgDateTime.result_processor = _result_processor
 

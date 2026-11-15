@@ -22,6 +22,14 @@ from app.models.user import LoginAttempt, Session, User
 logger = logging.getLogger(__name__)
 
 
+def _utcnow() -> datetime:
+    """Return current UTC time as an offset-naive datetime.
+    
+    Compatible with both SQLite and PostgreSQL TIMESTAMP WITHOUT TIME ZONE columns in asyncpg.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 # ---------------------------------------------------------------------------
 # Startup seeding
 # ---------------------------------------------------------------------------
@@ -48,7 +56,7 @@ async def seed_admin_user(db: AsyncSession) -> None:
         )
         return
 
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     admin = User(
         username=settings.ADMIN_USERNAME,
         hashed_password=settings.ADMIN_PASSWORD_HASH,
@@ -78,7 +86,12 @@ async def authenticate_user(
     Raises HTTP 429 (via ValueError with special prefix) when locked out.
     Records every attempt in login_attempts for audit + rate limiting.
     """
-    now = datetime.now(timezone.utc)
+    # Self-healing: if no users exist in database, seed admin user on-demand
+    user_count_result = await db.execute(select(func.count()).select_from(User))
+    if user_count_result.scalar_one() == 0:
+        await seed_admin_user(db)
+
+    now = _utcnow()
     lockout_window = now - timedelta(minutes=settings.AUTH_LOCKOUT_MINUTES)
 
     # Count recent failed attempts for this username
@@ -142,7 +155,7 @@ async def create_session(
 ) -> Session:
     """Create a new session for the given user. Commits to DB."""
     token = generate_session_token()
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     session = Session(
         id=token,
         user_id=user_id,
@@ -180,11 +193,10 @@ async def get_user_by_session_token(
     if session is None:
         return None
 
-    now = datetime.now(timezone.utc)
-    # Normalise naive datetimes (SQLite returns naive)
+    now = _utcnow()
     exp = session.expires_at
-    if exp.tzinfo is None:
-        exp = exp.replace(tzinfo=timezone.utc)
+    if exp.tzinfo is not None:
+        exp = exp.astimezone(timezone.utc).replace(tzinfo=None)
 
     if now > exp:
         # Expired — clean up

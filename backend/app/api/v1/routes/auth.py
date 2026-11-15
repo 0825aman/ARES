@@ -71,6 +71,9 @@ async def login(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=str(exc),
         )
+    except Exception as exc:
+        logger.exception("Login exception for username '%s': %s", body.username, exc)
+        raise
 
     if user is None:
         raise HTTPException(

@@ -28,7 +28,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="admin")
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
     )
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
@@ -51,7 +51,7 @@ class Session(Base):
     )
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
     )
     ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
 
@@ -76,6 +76,6 @@ class LoginAttempt(Base):
     attempted_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
         index=True,
     )
