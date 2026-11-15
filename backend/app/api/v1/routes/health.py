@@ -27,6 +27,28 @@ async def liveness_check():
     return {"status": "alive"}
 
 
+@router.get("/health/version")
+async def version_check(db: AsyncSession = Depends(get_db)):
+    """Diagnostic version and deployment check."""
+    import os
+    from app.models.user import User
+    from sqlalchemy import select, func
+    user_count = 0
+    db_err = None
+    try:
+        res = await db.execute(select(func.count()).select_from(User))
+        user_count = res.scalar_one()
+    except Exception as exc:
+        db_err = str(exc)
+    return {
+        "version": settings.APP_VERSION,
+        "commit": os.environ.get("RENDER_GIT_COMMIT", "local"),
+        "user_count": user_count,
+        "admin_hash_configured": bool(settings.ADMIN_PASSWORD_HASH),
+        "db_error": db_err,
+    }
+
+
 @router.get("/health/ready")
 async def readiness_check(db: AsyncSession = Depends(get_db)):
     """Readiness probe — returns 200 only when the database is accessible.

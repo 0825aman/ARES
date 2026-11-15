@@ -73,7 +73,10 @@ async def login(
         )
     except Exception as exc:
         logger.exception("Login exception for username '%s': %s", body.username, exc)
-        raise
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login authentication error: {type(exc).__name__}: {str(exc)}",
+        )
 
     if user is None:
         raise HTTPException(
