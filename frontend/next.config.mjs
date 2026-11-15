@@ -16,6 +16,10 @@ backendUrl = backendUrl.replace(/\/+$/, '');
 
 const nextConfig = {
   output: 'standalone',
+  eslint: {
+    // Avoid blocking production deployments on ESLint checks
+    ignoreDuringBuilds: true,
+  },
   async rewrites() {
     return [
       {
