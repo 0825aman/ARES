@@ -26,12 +26,21 @@ export class ApiError extends Error {
   }
 }
 
+function normalizeUrl(rawUrl: string): string {
+  if (!rawUrl || rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+    return rawUrl;
+  }
+  return rawUrl.includes('.onrender.com') ? `https://${rawUrl}` : `https://${rawUrl}.onrender.com`;
+}
+
 function getServerApiUrl(): string {
-  return process.env.API_URL ?? 'http://127.0.0.1:8000';
+  const url = process.env.API_URL ?? 'http://127.0.0.1:8000';
+  return normalizeUrl(url);
 }
 
 function getClientApiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? '';
+  const url = process.env.NEXT_PUBLIC_API_URL ?? '';
+  return url ? normalizeUrl(url) : '';
 }
 
 export function getApiBaseUrl(): string {

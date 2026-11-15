@@ -97,4 +97,15 @@ settings: Settings = get_settings()
 
 
 def get_allowed_origins() -> list[str]:
-    return [origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",")]
+    origins: list[str] = []
+    for origin in settings.ALLOWED_ORIGINS.split(","):
+        o = origin.strip()
+        if not o:
+            continue
+        if not o.startswith("http://") and not o.startswith("https://"):
+            if ".onrender.com" in o:
+                o = f"https://{o}"
+            else:
+                o = f"https://{o}.onrender.com"
+        origins.append(o)
+    return origins
