@@ -44,13 +44,24 @@ def configure_sqlite_pragmas(
         cursor.close()
 
 
+def get_async_database_url(url: str) -> str:
+    """Normalize Render/PostgreSQL connection string for SQLAlchemy asyncpg."""
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql+asyncpg://", 1)
+    if url.startswith("postgresql://") and "+asyncpg" not in url:
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    return url
+
+
+db_url = get_async_database_url(settings.DATABASE_URL)
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=(settings.APP_ENV == "development"),
 )
 
 # Apply PRAGMAs to the production engine when connecting to SQLite
-if "sqlite" in settings.DATABASE_URL:
+if "sqlite" in db_url:
     configure_sqlite_pragmas(
         engine.sync_engine,
         wal_mode=settings.DB_WAL_MODE,

@@ -85,9 +85,8 @@ async def login(
         value=session.id,
         httponly=True,
         samesite="lax",
-        # In production use secure=True; dev allows HTTP
-        secure=False,
-        max_age=3600 * 8,  # 8 hours (matches SESSION_TTL_HOURS default)
+        secure=(settings.APP_ENV == "production"),
+        max_age=3600 * settings.SESSION_TTL_HOURS,
     )
 
     logger.info("User '%s' logged in from %s.", user.username, client_ip)

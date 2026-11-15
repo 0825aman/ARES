@@ -22,14 +22,37 @@ logger = logging.getLogger(__name__)
 
 
 def _run_alembic_upgrade() -> None:
-    """Run alembic upgrade head synchronously at startup."""
+    """Run alembic upgrade head synchronously at startup.
+
+    If the database is fresh (no tables or missing research_projects), creates
+    the schema from Base.metadata and stamps Alembic to head.
+    Otherwise applies pending incremental migrations.
+    """
     from alembic.config import Config
     from alembic import command
+    from sqlalchemy import inspect, create_engine
+    from alembic.env import get_sync_url
+    from app.models.base import Base
 
-    # alembic.ini is one directory up from this file (backend/alembic.ini)
     ini_path = os.path.join(os.path.dirname(__file__), "..", "alembic.ini")
     alembic_cfg = Config(os.path.abspath(ini_path))
-    command.upgrade(alembic_cfg, "head")
+
+    try:
+        sync_url = get_sync_url()
+        sync_engine = create_engine(sync_url)
+        inspector = inspect(sync_engine)
+        existing_tables = inspector.get_table_names()
+
+        if not existing_tables or "research_projects" not in existing_tables:
+            Base.metadata.create_all(sync_engine)
+            command.stamp(alembic_cfg, "head")
+            logger.info("Initialized fresh database schema (%d tables) and stamped Alembic to head.", len(Base.metadata.tables))
+        else:
+            command.upgrade(alembic_cfg, "head")
+        sync_engine.dispose()
+    except Exception as exc:
+        logger.warning("Database schema check failed, attempting standard upgrade head: %s", exc)
+        command.upgrade(alembic_cfg, "head")
 
 
 async def _recover_stuck_runs() -> None:
@@ -164,3 +187,10 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 @app.get("/")
 async def root():
     return {"message": "ARES API", "version": settings.APP_VERSION}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=False)
+
