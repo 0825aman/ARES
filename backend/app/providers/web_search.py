@@ -47,15 +47,77 @@ class WebSearchProvider(ABC):
 
 
 # ---------------------------------------------------------------------------
-# Tavily (existing, unchanged)
+# DuckDuckGo — 100% free web search, no API key required
+# ---------------------------------------------------------------------------
+
+class DuckDuckGoSearchProvider(WebSearchProvider):
+    """100% Free Web Search via DuckDuckGo (ddgs).
+
+    - No API key required
+    - No cost / free tier limitations
+    - Returns SearchResult objects with title, URL, snippet
+    """
+
+    @async_retry(max_attempts=2, base_delay=1.0)
+    async def search(self, query: str, num_results: int) -> list[SearchResult]:
+        loop = asyncio.get_event_loop()
+
+        def _do_search(q: str):
+            try:
+                from ddgs import DDGS
+            except ImportError:
+                from duckduckgo_search import DDGS
+            with DDGS() as ddgs:
+                return list(ddgs.text(q, max_results=num_results))
+
+        # Try full query first, and if empty/error, try progressively simplified keyword slices
+        candidates = [query]
+        words = [w for w in query.replace(":", " ").replace("-", " ").split() if len(w) > 2]
+        if len(words) > 5:
+            candidates.append(" ".join(words[:5]))
+        if len(words) > 2:
+            candidates.append(" ".join(words[:3]))
+
+        for candidate in candidates:
+            try:
+                raw_results = await loop.run_in_executor(None, lambda c=candidate: _do_search(c))
+                if not raw_results:
+                    continue
+                results = []
+                for r in raw_results:
+                    url = r.get("href") or r.get("url") or ""
+                    title = r.get("title") or ""
+                    body = r.get("body") or r.get("snippet") or ""
+                    if url:
+                        results.append(
+                            SearchResult(
+                                url=url,
+                                title=title,
+                                snippet=body,
+                                content=body,
+                            )
+                        )
+                if results:
+                    return results
+            except Exception as exc:
+                logger.debug("DuckDuckGo search attempt failed for '%s': %s", candidate, exc)
+
+        return []
+
+
+# ---------------------------------------------------------------------------
+# Tavily (with automatic DuckDuckGo fallback)
 # ---------------------------------------------------------------------------
 
 class TavilySearchProvider(WebSearchProvider):
     def __init__(self, api_key: str):
         self._api_key = api_key
+        self._fallback = DuckDuckGoSearchProvider()
 
-    @async_retry(max_attempts=3, base_delay=1.0)
+    @async_retry(max_attempts=2, base_delay=1.0)
     async def search(self, query: str, num_results: int) -> list[SearchResult]:
+        if not self._api_key:
+            return await self._fallback.search(query, num_results)
         from tavily import TavilyClient
         client = TavilyClient(api_key=self._api_key)
         loop = asyncio.get_event_loop()
@@ -73,10 +135,13 @@ class TavilySearchProvider(WebSearchProvider):
                     content=r.get("raw_content"),
                     published_date=r.get("published_date"),
                 ))
+            if not results:
+                # Tavily returned empty; fallback to DuckDuckGo
+                return await self._fallback.search(query, num_results)
             return results
         except Exception as exc:
-            logger.error("Tavily search failed: %s", exc)
-            raise
+            logger.warning("Tavily search failed (%s); falling back to DuckDuckGo", exc)
+            return await self._fallback.search(query, num_results)
 
 
 # ---------------------------------------------------------------------------
@@ -369,12 +434,15 @@ def get_search_provider() -> WebSearchProvider:
 
     providers: list[WebSearchProvider] = []
 
-    if settings.SEARCH_PROVIDER == "tavily":
+    if settings.SEARCH_PROVIDER in ("duckduckgo", "ddg"):
+        providers.append(DuckDuckGoSearchProvider())
+        logger.info("DuckDuckGo 100% free search provider enabled")
+    elif settings.SEARCH_PROVIDER == "tavily":
         if settings.SEARCH_API_KEY:
             providers.append(TavilySearchProvider(api_key=settings.SEARCH_API_KEY))
         else:
-            logger.warning("Tavily selected but SEARCH_API_KEY is not set")
-            providers.append(TavilySearchProvider(api_key=""))
+            logger.warning("Tavily selected but SEARCH_API_KEY is not set — using DuckDuckGo fallback")
+            providers.append(DuckDuckGoSearchProvider())
 
     if settings.ARXIV_ENABLED:
         providers.append(ArXivSearchProvider())
