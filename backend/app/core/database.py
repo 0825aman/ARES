@@ -1,8 +1,10 @@
 from collections.abc import AsyncGenerator
+from datetime import datetime, timezone
 import ssl
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy import event
+from sqlalchemy.dialects.postgresql.asyncpg import AsyncpgDateTime
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncEngine,
@@ -11,6 +13,33 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import settings
+
+
+# Automatically convert timezone-aware Python datetimes to naive UTC for PostgreSQL
+# TIMESTAMP WITHOUT TIME ZONE columns in asyncpg, avoiding:
+# "TypeError: can't subtract offset-naive and offset-aware datetimes"
+def _patch_asyncpg_datetime() -> None:
+    def _bind_processor(self, dialect):
+        def process(value):
+            if isinstance(value, datetime):
+                if not getattr(self, "timezone", False) and value.tzinfo is not None:
+                    return value.astimezone(timezone.utc).replace(tzinfo=None)
+            return value
+        return process
+
+    def _result_processor(self, dialect, coltype):
+        def process(value):
+            if isinstance(value, datetime):
+                if value.tzinfo is None:
+                    return value.replace(tzinfo=timezone.utc)
+            return value
+        return process
+
+    AsyncpgDateTime.bind_processor = _bind_processor
+    AsyncpgDateTime.result_processor = _result_processor
+
+
+_patch_asyncpg_datetime()
 
 
 def configure_sqlite_pragmas(
