@@ -31,14 +31,14 @@ def _run_alembic_upgrade() -> None:
     from alembic.config import Config
     from alembic import command
     from sqlalchemy import inspect, create_engine
-    from alembic.env import get_sync_url
+    from app.core.database import get_sync_database_url
     from app.models.base import Base
 
     ini_path = os.path.join(os.path.dirname(__file__), "..", "alembic.ini")
     alembic_cfg = Config(os.path.abspath(ini_path))
 
     try:
-        sync_url = get_sync_url()
+        sync_url = get_sync_database_url(settings.DATABASE_URL)
         sync_engine = create_engine(sync_url)
         inspector = inspect(sync_engine)
         existing_tables = inspector.get_table_names()

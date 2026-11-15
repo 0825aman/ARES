@@ -47,14 +47,8 @@ target_metadata = Base.metadata
 def get_sync_url() -> str:
     """Return a synchronous database URL for Alembic migrations."""
     from app.core.config import settings
-    url = settings.DATABASE_URL
-    if url.startswith("sqlite+aiosqlite"):
-        return url.replace("sqlite+aiosqlite", "sqlite")
-    if url.startswith("postgresql+asyncpg://"):
-        return url.replace("postgresql+asyncpg://", "postgresql://", 1)
-    if url.startswith("postgres://"):
-        return url.replace("postgres://", "postgresql://", 1)
-    return url
+    from app.core.database import get_sync_database_url
+    return get_sync_database_url(settings.DATABASE_URL)
 
 
 def run_migrations_offline() -> None:

@@ -53,6 +53,17 @@ def get_async_database_url(url: str) -> str:
     return url
 
 
+def get_sync_database_url(url: str) -> str:
+    """Return a synchronous database URL for Alembic migrations and schema inspection."""
+    if url.startswith("sqlite+aiosqlite"):
+        return url.replace("sqlite+aiosqlite", "sqlite")
+    if url.startswith("postgresql+asyncpg://"):
+        return url.replace("postgresql+asyncpg://", "postgresql://", 1)
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
 db_url = get_async_database_url(settings.DATABASE_URL)
 
 engine = create_async_engine(
