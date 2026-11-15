@@ -6,14 +6,12 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Activity,
   Terminal,
   Loader2,
   Compass,
-  Cpu,
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -85,11 +83,11 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <CardTitle className="font-mono text-sm font-bold text-slate-100 flex items-center gap-2">
                 <Compass className="h-4 w-4 text-blue-400" />
-                SECURITY GATEWAY · MISSION LAUNCH
+                RESEARCH WORKSPACE
               </CardTitle>
               <span className="telemetry-chip font-mono text-[10px] text-emerald-400 border-emerald-500/30 flex items-center gap-1.5 font-bold">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                GATEWAY READY
+                ONLINE
               </span>
             </div>
             <CardDescription className="font-mono text-xs text-slate-400">
@@ -122,21 +120,6 @@ export default function LoginPage() {
 
                 {/* Ambient scan line overlay */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent opacity-40" />
-
-                {/* Top status indicator overlay */}
-                <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded border border-blue-500/30 text-[11px] font-mono text-blue-300 pointer-events-none">
-                  <Sparkles className="h-3.5 w-3.5 text-sky-400" />
-                  <span>ARES HOLOGRAPHIC REVEAL</span>
-                </div>
-              </div>
-
-              {/* Video footer description */}
-              <div className="px-4 py-2.5 bg-slate-900/95 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-300">Identity Hologram &amp; Core Telemetry</span>
-                <span className="text-emerald-400 flex items-center gap-1.5 font-semibold text-[11px]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  ACTIVE SYSTEM
-                </span>
               </div>
             </div>
 
@@ -178,12 +161,6 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Bottom verification badge */}
-        <div className="flex items-center justify-center gap-2 font-mono text-xs text-slate-400">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
-          <span>AUTONOMOUS OPERATOR ACCESS · SINGLE-CLICK INITIALIZATION</span>
-        </div>
       </div>
     </div>
   );

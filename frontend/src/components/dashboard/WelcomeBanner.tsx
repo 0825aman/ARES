@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Activity,
   Terminal,
-  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -135,20 +134,11 @@ export function WelcomeBanner() {
               {/* Ambient scan line overlay */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent opacity-40" />
 
-              {/* Top status indicator overlay */}
-              <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-md px-2 py-0.5 rounded border border-blue-500/30 text-[10px] font-mono text-blue-300 pointer-events-none">
-                <Sparkles className="h-3 w-3 text-sky-400" />
-                <span>ARES REVEAL</span>
-              </div>
-            </div>
-
-            {/* Video footer description */}
-            <div className="px-3 py-2 bg-slate-900/95 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-slate-400 truncate">Holographic Identity Reveal</span>
-              <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+              {/* Status indicator overlay */}
+              <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-md px-2 py-0.5 rounded border border-emerald-500/30 text-[10px] font-mono text-emerald-400 pointer-events-none">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
                 LIVE
-              </span>
+              </div>
             </div>
           </div>
         </div>

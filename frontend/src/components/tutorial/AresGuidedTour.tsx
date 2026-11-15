@@ -40,7 +40,7 @@ const TOUR_STEPS: TourStep[] = [
     keynotes: [
       'Displays active 4-Agent swarm status (Planner, Researcher, Supervisor, Critic).',
       'Provides live failover mesh health (Gemini ➔ Groq ➔ OpenRouter ➔ WatsonX).',
-      'Ambient holographic logo reveal and real-time mission count metrics.',
+      'Real-time mission count metrics and system telemetry.',
     ],
   },
   {
