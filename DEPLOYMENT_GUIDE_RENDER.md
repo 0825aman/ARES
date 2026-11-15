@@ -149,7 +149,7 @@ If you prefer to create the services manually in the Render UI:
    - **Region**: Same region as backend.
    - **Branch**: `main`
    - **Plan**: Select **Free** ($0/month).
-   - **Build Command**: `npm ci && npm run build`
+   - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm start`
 4. Under **Environment Variables**, add:
    ```env
