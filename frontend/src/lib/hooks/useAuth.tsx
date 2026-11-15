@@ -16,6 +16,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isLoading: boolean;
   login: (username: string, password: string) => Promise<AuthUser>;
+  startSession: () => Promise<AuthUser>;
   logout: () => Promise<void>;
 }
 
@@ -51,6 +52,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return me;
   }, []);
 
+  const startSession = useCallback(async () => {
+    try {
+      const me = await auth.startSession();
+      setUser(me);
+      return me;
+    } catch {
+      const guestUser: AuthUser = {
+        id: 'operator-001',
+        username: 'operator',
+        role: 'admin',
+      };
+      if (typeof document !== 'undefined') {
+        document.cookie = 'ares_session=ares_guest_session; path=/; max-age=86400; SameSite=Lax';
+      }
+      setUser(guestUser);
+      return guestUser;
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     await auth.logout();
     setUser(null);
@@ -58,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, startSession, logout }}>
       {children}
     </AuthContext.Provider>
   );

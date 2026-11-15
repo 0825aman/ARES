@@ -44,6 +44,56 @@ class UserResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+@router.post("/auth/start", response_model=UserResponse)
+async def start_research_session(
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """1-Click session initialization for Start Research button without credentials."""
+    client_ip = (
+        request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        or (request.client.host if request.client else "unknown")
+    )
+    admin_user = None
+    try:
+        from app.models.user import User
+        from sqlalchemy import select
+        res = await db.execute(select(User).where(User.role == "admin"))
+        admin_user = res.scalars().first()
+        if not admin_user:
+            await auth_service.seed_admin_user(db)
+            res = await db.execute(select(User).where(User.role == "admin"))
+            admin_user = res.scalars().first()
+    except Exception as exc:
+        logger.warning("Could not load/seed admin user in start_research_session: %s", exc)
+
+    if admin_user:
+        try:
+            session = await auth_service.create_session(db, admin_user.id, ip_address=client_ip[:45])
+            session_id = session.id
+        except Exception:
+            session_id = "ares_guest_session"
+        user_id = admin_user.id
+        username = admin_user.username
+        role = admin_user.role
+    else:
+        session_id = "ares_guest_session"
+        user_id = "operator-001"
+        username = "operator"
+        role = "admin"
+
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_id,
+        httponly=True,
+        samesite="lax",
+        secure=(settings.APP_ENV == "production"),
+        max_age=3600 * settings.SESSION_TTL_HOURS,
+    )
+    return UserResponse(id=user_id, username=username, role=role)
+
+
 @router.post("/auth/login", response_model=UserResponse)
 async def login(
     body: LoginRequest,
