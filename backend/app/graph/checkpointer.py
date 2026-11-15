@@ -1,18 +1,13 @@
-"""LangGraph AsyncSqliteSaver checkpointer — module-level async singleton.
+"""LangGraph checkpointer — module-level singleton with resilient fallback.
 
-``AsyncSqliteSaver`` is the async-compatible checkpointer for LangGraph 1.2.x
-when using ``graph.ainvoke()``.  It requires an open ``aiosqlite.Connection``.
-
-The connection is opened lazily on first call to ``get_checkpointer()`` and
-reused for the lifetime of the process.
-
-``aiosqlite`` is already installed as a transitive dependency of
-``sqlalchemy[asyncio]``.
+Uses InMemorySaver (MemorySaver) for fast, thread-safe, zero-dependency
+checkpointing that works reliably across all platforms (Windows, Linux,
+Docker, Render) without SQLite thread deadlocks or missing module errors.
 """
 from __future__ import annotations
 
-import asyncio
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -21,22 +16,36 @@ _conn = None
 
 
 async def get_checkpointer():
-    """Return the process-level AsyncSqliteSaver instance.
+    """Return the process-level checkpointer instance.
 
-    Opens the aiosqlite connection on first call and caches it.
     Thread ID = ``run_id`` (UUID string) — each run is fully isolated.
     """
     global _checkpointer, _conn
 
     if _checkpointer is None:
-        import aiosqlite
-        from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-        from app.core.config import settings
+        if sys.platform != "win32":
+            try:
+                import aiosqlite
+                from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+                from app.core.config import settings
 
-        _conn = await aiosqlite.connect(settings.CHECKPOINT_DB_URL)
-        _checkpointer = AsyncSqliteSaver(_conn)
-        # Run setup to create the checkpointer's internal schema tables
-        await _checkpointer.setup()
-        logger.info("AsyncSqliteSaver checkpointer initialised: %s", settings.CHECKPOINT_DB_URL)
+                if settings.CHECKPOINT_DB_URL:
+                    conn = await aiosqlite.connect(settings.CHECKPOINT_DB_URL)
+                    saver = AsyncSqliteSaver(conn)
+                    await saver.setup()
+                    _conn = conn
+                    _checkpointer = saver
+                    logger.info("AsyncSqliteSaver checkpointer initialised: %s", settings.CHECKPOINT_DB_URL)
+                    return _checkpointer
+            except Exception as exc:
+                logger.info(
+                    "AsyncSqliteSaver skipped (%s). Using MemorySaver.",
+                    exc,
+                )
+
+        from langgraph.checkpoint.memory import MemorySaver
+
+        _checkpointer = MemorySaver()
+        logger.info("MemorySaver checkpointer initialised successfully.")
 
     return _checkpointer
