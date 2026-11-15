@@ -16,6 +16,7 @@ import {
   Zap,
   X,
   Compass,
+  Activity,
 } from 'lucide-react';
 import { type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
@@ -150,6 +151,7 @@ export function Sidebar({ onNavigate, onClose, className }: SidebarProps = {}) {
         <NavItem href="/projects" icon={FolderOpen} label="Research Missions" shortcut="⌘2" onClick={onNavigate} />
         <NavItem href="/projects/new" icon={Plus} label="New Mission" badge="NEW" shortcut="⌘3" exact onClick={onNavigate} />
         <NavItem href="/tokens" icon={Zap} label="Token Tracker" badge="LIVE" shortcut="⌘4" exact onClick={onNavigate} />
+        <NavItem href="/evaluations" icon={Activity} label="Agent & LLM Evals" badge="EVAL" shortcut="⌘5" exact onClick={onNavigate} />
 
         {/* Multi-Agent Swarm Telemetry Section */}
         <div className="pt-4 pb-1">

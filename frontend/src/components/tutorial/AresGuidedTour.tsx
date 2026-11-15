@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   HelpCircle,
   Compass,
+  Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -82,9 +83,22 @@ const TOUR_STEPS: TourStep[] = [
     ],
   },
   {
+    id: 'evaluations-dashboard',
+    title: 'LLM Agent & Performance Evaluation',
+    badge: 'STAGE 5 // BENCHMARKING & METRICS',
+    route: '/evaluations',
+    icon: Activity,
+    summary: 'Empirical measurement across accuracy, RAG faithfulness, agent autonomy, and safety guardrails.',
+    keynotes: [
+      'Comprehensive metrics covering Exact Match, F1, ROUGE, BLEU, and Groundedness.',
+      'RAG and Agentic AI evaluation tracking planning, tool accuracy, and loop prevention.',
+      'Multi-Agent Swarm scorecards evaluating Planner, Researcher, Supervisor, and Critic agents.',
+    ],
+  },
+  {
     id: 'system-settings',
     title: 'System & Failover Mesh',
-    badge: 'STAGE 5 // RESILIENCE CONFIG',
+    badge: 'STAGE 6 // RESILIENCE CONFIG',
     route: '/settings',
     icon: Settings,
     summary: 'Configure primary models, failover routes, and backend system health.',
