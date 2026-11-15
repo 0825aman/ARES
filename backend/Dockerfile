@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN groupadd -g 1001 maar && \
-    useradd -u 1001 -g maar -m -s /bin/bash maar
+RUN groupadd -g 1001 ares && \
+    useradd -u 1001 -g ares -m -s /bin/bash ares
 
 # Copy installed Python packages from builder
 COPY --from=builder /install /usr/local
@@ -41,15 +41,15 @@ COPY app ./app
 
 # Create persistent storage directories with correct ownership
 RUN mkdir -p /app/data /app/uploads /app/exports && \
-    chown -R maar:maar /app
+    chown -R ares:ares /app
 
-USER maar
+USER ares
 
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1 \
-    DATABASE_URL=sqlite+aiosqlite:////app/data/maar.db \
-    CHECKPOINT_DB_URL=/app/data/maar_checkpoints.db \
+    DATABASE_URL=sqlite+aiosqlite:////app/data/ares.db \
+    CHECKPOINT_DB_URL=/app/data/ares_checkpoints.db \
     UPLOAD_DIR=/app/uploads \
     EXPORT_DIR=/app/exports
 

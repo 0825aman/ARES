@@ -5,22 +5,22 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: maar-backend
+    container_name: ares-backend
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
     environment:
       - APP_ENV=production
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/maar.db
-      - CHECKPOINT_DB_URL=/app/data/maar_checkpoints.db
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/ares.db
+      - CHECKPOINT_DB_URL=/app/data/ares_checkpoints.db
       - UPLOAD_DIR=/app/uploads
       - EXPORT_DIR=/app/exports
       - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
     volumes:
-      - maar-db:/app/data
-      - maar-uploads:/app/uploads
-      - maar-exports:/app/exports
+      - ares-db:/app/data
+      - ares-uploads:/app/uploads
+      - ares-exports:/app/exports
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/live"]
       interval: 15s
@@ -33,7 +33,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: maar-frontend
+    container_name: ares-frontend
     ports:
       - "3000:3000"
     environment:
@@ -45,9 +45,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  maar-db:
-    name: maar-db
-  maar-uploads:
-    name: maar-uploads
-  maar-exports:
-    name: maar-exports
+  ares-db:
+    name: ares-db
+  ares-uploads:
+    name: ares-uploads
+  ares-exports:
+    name: ares-exports

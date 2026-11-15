@@ -10,9 +10,9 @@ services:
       - ./backend/app:/app/app:ro
       - ./backend/alembic:/app/alembic:ro
       - ./backend/alembic.ini:/app/alembic.ini:ro
-      - maar-db:/app/data
-      - maar-uploads:/app/uploads
-      - maar-exports:/app/exports
+      - ares-db:/app/data
+      - ares-uploads:/app/uploads
+      - ares-exports:/app/exports
     environment:
       - APP_ENV=development
       - AUTO_LOGIN_DEV=true
