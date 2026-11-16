@@ -14,7 +14,11 @@ export default function DashboardPage() {
       >
         <div className="flex items-center gap-2.5">
           {/* ARES Brand Badge in Title Bar */}
-          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md border border-slate-700 bg-slate-900/90 text-xs font-mono shadow-sm">
+          <Link
+            href="/"
+            title="Go to Mission Control Dashboard"
+            className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md border border-slate-700 bg-slate-900/90 text-xs font-mono shadow-sm hover:border-blue-500/50 hover:bg-slate-800 transition-colors cursor-pointer"
+          >
             <div className="h-6 w-6 rounded overflow-hidden bg-slate-900 border border-blue-500/40 p-0.5 shrink-0 shadow-xs flex items-center justify-center">
               <img
                 src="/ares-logo.png"
@@ -26,7 +30,7 @@ export default function DashboardPage() {
             <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
               ONLINE
             </span>
-          </div>
+          </Link>
 
           <Button
             asChild
@@ -35,7 +39,7 @@ export default function DashboardPage() {
           >
             <Link href="/projects/new">
               <Plus className="h-3.5 w-3.5 mr-1.5" />
-              INITIATE MISSION
+              INITIALIZE MISSION
             </Link>
           </Button>
         </div>

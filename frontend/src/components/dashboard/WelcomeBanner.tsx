@@ -42,13 +42,17 @@ export function WelcomeBanner() {
 
           {/* Title & Official Emblem Logo (Enlarged 2x on Dashboard) */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 pt-1">
-            <div className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-2xl overflow-hidden bg-slate-900/80 border border-blue-500/40 p-2 shadow-[0_0_35px_rgba(59,130,246,0.3)] ring-2 ring-sky-400/30 flex items-center justify-center group">
+            <Link
+              href="/"
+              title="ARES Mission Control Dashboard"
+              className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-2xl overflow-hidden bg-slate-900/80 border border-blue-500/40 p-2 shadow-[0_0_35px_rgba(59,130,246,0.3)] ring-2 ring-sky-400/30 flex items-center justify-center group cursor-pointer"
+            >
               <img
                 src="/ares-logo.png"
                 alt="ARES Official Logo"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
-            </div>
+            </Link>
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl font-mono">

@@ -86,26 +86,33 @@ export function Sidebar({ onNavigate, onClose, className }: SidebarProps = {}) {
     <aside className={cn('sidebar flex h-full w-64 flex-col shrink-0 select-none border-r border-slate-800', className)}>
       {/* Brand Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-slate-900 border border-blue-500/30 shadow-md shadow-sky-500/20 ring-1 ring-sky-400/30 shrink-0 p-1">
+        <Link
+          href="/"
+          onClick={onClose}
+          className="flex items-center gap-3 group cursor-pointer"
+          title="Go to Mission Control Dashboard"
+        >
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-slate-900 border border-blue-500/30 shadow-md shadow-sky-500/20 ring-1 ring-sky-400/30 shrink-0 p-1 group-hover:border-blue-400 group-hover:ring-sky-400/50 transition-all duration-300">
             <img
               src="/ares-logo.png"
               alt="ARES Logo"
-              className="h-full w-full object-contain"
+              className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-white tracking-wider font-mono">ARES</span>
+              <span className="text-sm font-bold text-white tracking-wider font-mono group-hover:text-sky-300 transition-colors">
+                ARES
+              </span>
               <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30 font-semibold leading-none">
                 PRO
               </span>
             </div>
-            <p className="text-[10px] font-mono leading-none mt-1 text-slate-400">
+            <p className="text-[10px] font-mono leading-none mt-1 text-slate-400 group-hover:text-slate-300 transition-colors">
               Autonomous Research &amp; Evidence
             </p>
           </div>
-        </div>
+        </Link>
 
         {onClose && (
           <button

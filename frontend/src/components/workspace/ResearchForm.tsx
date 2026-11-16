@@ -2,15 +2,23 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { FlaskConical, Loader2, Network, ArrowRight, ScanSearch, Zap, Terminal } from 'lucide-react';
+import { FlaskConical, Loader2, Network, ArrowRight, ScanSearch, Zap, Terminal, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FileUploadArea } from './FileUploadArea';
 import { startRun, uploadDocuments } from '@/lib/api/runs';
 import { ApiError } from '@/lib/api/client';
+import { SUPPORTED_LANGUAGES } from '@/lib/constants/languages';
 import type { ResearchRun } from '@/lib/types/run';
 
 interface ResearchFormProps {
@@ -19,8 +27,23 @@ interface ResearchFormProps {
   onRunStarted: (run: ResearchRun) => void;
 }
 
+function parseInitialLanguage(q: string): { cleanQuestion: string; langCode: string } {
+  const match = q.match(/\[(?:Target Output Language|Output Language|Target Language|Language):\s*([^\]]+)\]/i);
+  if (!match) return { cleanQuestion: q, langCode: 'en' };
+  const targetStr = match[1].trim().toLowerCase();
+  const found = SUPPORTED_LANGUAGES.find(
+    (l) => l.name.toLowerCase() === targetStr || targetStr.includes(l.name.toLowerCase()) || targetStr.includes(l.native.toLowerCase())
+  );
+  return {
+    cleanQuestion: q.replace(/\s*\[(?:Target Output Language|Output Language|Target Language|Language):\s*[^\]]+\]/i, '').trim(),
+    langCode: found ? found.code : 'en',
+  };
+}
+
 export function ResearchForm({ projectId, defaultQuestion, onRunStarted }: ResearchFormProps) {
-  const [question, setQuestion] = useState(defaultQuestion);
+  const initial = parseInitialLanguage(defaultQuestion);
+  const [question, setQuestion] = useState(initial.cleanQuestion);
+  const [language, setLanguage] = useState<string>(initial.langCode);
   const [useWeb, setUseWeb] = useState(true);
   const [useDocs, setUseDocs] = useState(false);
   const [workflowMode, setWorkflowMode] = useState<'sequential' | 'multi_agent'>('multi_agent');
@@ -28,6 +51,8 @@ export function ResearchForm({ projectId, defaultQuestion, onRunStarted }: Resea
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sourceError, setSourceError] = useState<string | null>(null);
+
+  const selectedLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === language);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,8 +88,13 @@ export function ResearchForm({ projectId, defaultQuestion, onRunStarted }: Resea
         }
       }
 
+      const finalQuestion =
+        language !== 'en' && selectedLangObj
+          ? `${question.trim()}\n\n[Target Output Language: ${selectedLangObj.name} (${selectedLangObj.native})]`
+          : question.trim();
+
       const run = await startRun(projectId, {
-        research_question: question.trim(),
+        research_question: finalQuestion,
         use_web: useWeb,
         use_documents: useDocs && documentIds.length > 0,
         document_ids: documentIds,
@@ -271,6 +301,32 @@ export function ResearchForm({ projectId, defaultQuestion, onRunStarted }: Resea
                 </span>
               </button>
             </div>
+          </div>
+
+          {/* Research Output Language */}
+          <div className="space-y-1.5">
+            <Label htmlFor="run_language" className="font-mono text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <Globe className="h-3.5 w-3.5 text-blue-400" />
+              <span>Research Output Language</span>
+            </Label>
+            <Select value={language} onValueChange={setLanguage}>
+              <SelectTrigger id="run_language" className="bg-slate-950 border-slate-700 font-mono text-xs text-white">
+                <SelectValue placeholder="Select output language" />
+              </SelectTrigger>
+              <SelectContent className="max-h-64 bg-slate-900 border-slate-800 text-slate-200">
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code} className="text-xs font-mono">
+                    <span className="font-semibold text-white">{lang.name}</span>{' '}
+                    <span className="text-slate-400">({lang.native})</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {language !== 'en' && selectedLangObj && (
+              <p className="text-[11px] font-mono text-sky-300">
+                Synthesis Directive: Report, evidence analysis, and executive summary will be generated in <strong>{selectedLangObj.name} ({selectedLangObj.native})</strong>.
+              </p>
+            )}
           </div>
 
           {/* Submit */}

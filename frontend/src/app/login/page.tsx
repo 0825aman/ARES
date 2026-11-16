@@ -12,6 +12,10 @@ import {
   Terminal,
   Loader2,
   Compass,
+  Sparkles,
+  Bot,
+  Brain,
+  Search,
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -20,7 +24,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Guarantee seamless video playback across Chrome, Safari, and Firefox
+  // Guarantee seamless background video playback across Chrome, Safari, and Firefox
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.defaultMuted = true;
@@ -55,10 +59,25 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-slate-950 p-4 sm:p-6 overflow-hidden">
-      {/* Background cyber ambient grid */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
-      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-indigo-600/15 blur-3xl" />
+      {/* Full-screen Background Video Animation with Cyber Lighting */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none select-none z-0">
+        <video
+          ref={videoRef}
+          src="/ares-reveal.webm"
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="auto"
+          className="w-full h-full object-cover opacity-35 filter brightness-90 contrast-125 scale-105"
+          style={{ willChange: 'transform' }}
+        />
+        {/* Layered Cyber Overlays for optimal readability and high-tech contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/65" />
+        <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
+        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-blue-600/20 blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-indigo-600/20 blur-3xl" />
+      </div>
 
       <div className="relative z-10 w-full max-w-2xl space-y-6">
         {/* Top Header Branding */}
@@ -72,7 +91,7 @@ export default function LoginPage() {
           </div>
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <h1 className="font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              <h1 className="font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-md">
                 ARES <span className="text-blue-400">{'//'}</span> MISSION CONTROL
               </h1>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold tracking-wider">
@@ -82,6 +101,16 @@ export default function LoginPage() {
             <p className="font-mono text-xs text-sky-400 font-semibold tracking-widest uppercase">
               Autonomous Research &amp; Evidence System
             </p>
+          </div>
+
+          {/* Developer Credit Header Badge */}
+          <div className="pt-1">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-500/40 bg-slate-900/90 text-sky-300 font-mono text-xs shadow-md backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>
+                Developed by <span className="text-white font-bold">Aman Shrivastava</span>, AI-ML Engineer
+              </span>
+            </div>
           </div>
         </div>
 
@@ -107,34 +136,42 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="pt-6 space-y-6">
-            {/* Logo Reveal Welcome Video Container */}
-            <div className="relative rounded-xl overflow-hidden border border-blue-500/40 bg-slate-950/90 shadow-[0_0_35px_rgba(59,130,246,0.25)] group transition-all duration-300 hover:border-blue-400/60">
-              {/* Cyber corner accents */}
-              <div className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 border-blue-400 z-20 pointer-events-none" />
-              <div className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 border-blue-400 z-20 pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 border-blue-400 z-20 pointer-events-none" />
-              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 border-blue-400 z-20 pointer-events-none" />
+            {/* 4-Agent Swarm Capabilities Matrix */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+              <div className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950/70 text-center space-y-1 backdrop-blur-sm">
+                <div className="h-7 w-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1">
+                  <Brain className="h-4 w-4" />
+                </div>
+                <span className="text-slate-100 font-bold text-[11px]">Planner Agent</span>
+                <span className="text-[10px] text-slate-400">DAG Decomposition</span>
+              </div>
 
-              {/* Video Player */}
-              <div className="relative aspect-video w-full bg-slate-950 overflow-hidden flex items-center justify-center select-none">
-                <video
-                  ref={videoRef}
-                  src="/ares-reveal.webm"
-                  autoPlay
-                  muted
-                  playsInline
-                  loop
-                  preload="auto"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
-                  style={{ willChange: 'transform' }}
-                />
+              <div className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950/70 text-center space-y-1 backdrop-blur-sm">
+                <div className="h-7 w-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1">
+                  <Search className="h-4 w-4" />
+                </div>
+                <span className="text-slate-100 font-bold text-[11px]">Researcher</span>
+                <span className="text-[10px] text-slate-400">Multi-Source Engine</span>
+              </div>
 
-                {/* Ambient scan line overlay */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent opacity-40" />
+              <div className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950/70 text-center space-y-1 backdrop-blur-sm">
+                <div className="h-7 w-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-1">
+                  <Bot className="h-4 w-4" />
+                </div>
+                <span className="text-slate-100 font-bold text-[11px]">Supervisor</span>
+                <span className="text-[10px] text-slate-400">Cyclic Coordination</span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-950/70 text-center space-y-1 backdrop-blur-sm">
+                <div className="h-7 w-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mb-1">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <span className="text-slate-100 font-bold text-[11px]">Critic Agent</span>
+                <span className="text-[10px] text-slate-400">Adversarial Review</span>
               </div>
             </div>
 
-            {/* Quick feature telemetry chips */}
+            {/* Feature Telemetry Badges */}
             <div className="grid grid-cols-3 gap-2 font-mono text-xs">
               <div className="flex items-center justify-center gap-1.5 rounded-md border border-slate-800 bg-slate-950/80 px-2.5 py-2 text-slate-300 text-center">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
@@ -142,7 +179,7 @@ export default function LoginPage() {
               </div>
               <div className="flex items-center justify-center gap-1.5 rounded-md border border-slate-800 bg-slate-950/80 px-2.5 py-2 text-slate-300 text-center">
                 <Activity className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-                <span className="text-[11px]">4-Agent Swarm</span>
+                <span className="text-[11px]">Multi-Lingual Swarm</span>
               </div>
               <div className="flex items-center justify-center gap-1.5 rounded-md border border-slate-800 bg-slate-950/80 px-2.5 py-2 text-slate-300 text-center">
                 <Terminal className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
@@ -172,6 +209,18 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Footer with Developer Attribution */}
+        <footer className="text-center font-mono text-xs text-slate-400 pt-2 space-y-1">
+          <p className="flex items-center justify-center gap-1.5 text-slate-300">
+            <span>Developed by</span>
+            <span className="text-sky-300 font-bold">Aman Shrivastava</span>,
+            <span className="text-slate-300">AI-ML Engineer</span>
+          </p>
+          <p className="text-[11px] text-slate-400">
+            ARES Autonomous Research &amp; Evidence Engine · Open Multi-Agent Architecture
+          </p>
+        </footer>
       </div>
     </div>
   );

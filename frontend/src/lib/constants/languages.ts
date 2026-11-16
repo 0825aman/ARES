@@ -1,0 +1,48 @@
+export interface LanguageOption {
+  code: string;
+  name: string;
+  native: string;
+}
+
+export const SUPPORTED_LANGUAGES: LanguageOption[] = [
+  { code: 'en', name: 'English', native: 'English (Default)' },
+  { code: 'es', name: 'Spanish', native: 'Español' },
+  { code: 'fr', name: 'French', native: 'Français' },
+  { code: 'de', name: 'German', native: 'Deutsch' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', native: '中文 (简体)' },
+  { code: 'zh-TW', name: 'Chinese (Traditional)', native: '中文 (繁體)' },
+  { code: 'ja', name: 'Japanese', native: '日本語' },
+  { code: 'ar', name: 'Arabic', native: 'العربية' },
+  { code: 'ru', name: 'Russian', native: 'Русский' },
+  { code: 'pt', name: 'Portuguese', native: 'Português' },
+  { code: 'it', name: 'Italian', native: 'Italiano' },
+  { code: 'ko', name: 'Korean', native: '한국어' },
+  { code: 'nl', name: 'Dutch', native: 'Nederlands' },
+  { code: 'tr', name: 'Turkish', native: 'Türkçe' },
+  { code: 'pl', name: 'Polish', native: 'Polski' },
+  { code: 'sv', name: 'Swedish', native: 'Svenska' },
+  { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia' },
+  { code: 'vi', name: 'Vietnamese', native: 'Tiếng Việt' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी' },
+  { code: 'ur', name: 'Urdu', native: 'اردو' },
+  { code: 'fa', name: 'Persian', native: 'فارسی' },
+  { code: 'he', name: 'Hebrew', native: 'עברית' },
+  { code: 'el', name: 'Greek', native: 'Ελληνικά' },
+  { code: 'th', name: 'Thai', native: 'ไทย' },
+  { code: 'uk', name: 'Ukrainian', native: 'Українська' },
+  { code: 'cs', name: 'Czech', native: 'Čeština' },
+  { code: 'ro', name: 'Romanian', native: 'Română' },
+  { code: 'hu', name: 'Hungarian', native: 'Magyar' },
+  { code: 'da', name: 'Danish', native: 'Dansk' },
+  { code: 'fi', name: 'Finnish', native: 'Suomi' },
+  { code: 'no', name: 'Norwegian', native: 'Norsk' },
+  { code: 'fil', name: 'Filipino / Tagalog', native: 'Wikang Filipino' },
+  { code: 'ms', name: 'Malay', native: 'Bahasa Melayu' },
+  { code: 'sw', name: 'Swahili', native: 'Kiswahili' },
+  { code: 'sk', name: 'Slovak', native: 'Slovenčina' },
+  { code: 'ca', name: 'Catalan', native: 'Català' },
+];

@@ -63,7 +63,7 @@ export function AppShell({ children }: AppShellProps) {
             href="/projects/new"
             onClick={() => setMobileMenuOpen(false)}
             className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 border border-blue-400/40"
-            title="Initiate Mission"
+            title="Initialize Mission"
           >
             <Plus className="h-4 w-4" />
           </Link>
