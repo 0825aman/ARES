@@ -229,8 +229,65 @@ def _add_paragraph_with_citations_docx(
 
 # ── PDF generation ─────────────────────────────────────────────────────────────
 
+_UNICODE_FONT_NAME: str | None = None
+
+
+def _get_unicode_font_name() -> str:
+    """Register and cache a TrueType font capable of rendering international Unicode
+    (including Hindi/Devanagari, Cyrillic, Greek, Arabic, and extended Latin).
+    Falls back gracefully to Helvetica if no TrueType font is found.
+    """
+    global _UNICODE_FONT_NAME
+    if _UNICODE_FONT_NAME:
+        return _UNICODE_FONT_NAME
+
+    try:
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+
+        base_dir = pathlib.Path(__file__).parent.parent
+        candidates = [
+            # 1. Bundled universal FreeSerif (covers 8,000+ glyphs including Devanagari/Hindi)
+            base_dir / "assets" / "fonts" / "FreeSerif.ttf",
+            # 2. Linux system fonts (Debian/Ubuntu/Render)
+            pathlib.Path("/usr/share/fonts/truetype/freefont/FreeSerif.ttf"),
+            pathlib.Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+            pathlib.Path("/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf"),
+            # 3. Windows system fonts (local fallback)
+            pathlib.Path("C:/Windows/Fonts/Nirmala.ttf"),
+            pathlib.Path("C:/Windows/Fonts/mangal.ttf"),
+            pathlib.Path("C:/Windows/Fonts/arial.ttf"),
+        ]
+
+        for p in candidates:
+            if p.is_file():
+                font_path_str = str(p.resolve())
+                font_name = "ARES_Unicode_Font"
+                try:
+                    pdfmetrics.registerFont(TTFont(font_name, font_path_str))
+                    # Register family so inline <b>, <i> tags in Paragraphs don't switch to non-Unicode Helvetica
+                    pdfmetrics.registerFontFamily(
+                        font_name,
+                        normal=font_name,
+                        bold=font_name,
+                        italic=font_name,
+                        boldItalic=font_name,
+                    )
+                    _UNICODE_FONT_NAME = font_name
+                    logger.info("export_service: registered Unicode PDF font from %s", font_path_str)
+                    return font_name
+                except Exception as reg_exc:
+                    logger.warning("export_service: failed to register font %s: %s", font_path_str, reg_exc)
+
+    except Exception as exc:
+        logger.warning("export_service: error during Unicode font setup: %s", exc)
+
+    _UNICODE_FONT_NAME = "Helvetica"
+    return "Helvetica"
+
+
 def _generate_pdf(report: ResearchReport, file_path: str) -> None:
-    """Generate a PDF report using reportlab."""
+    """Generate a PDF report using reportlab with multi-lingual Unicode font support."""
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -246,32 +303,40 @@ def _generate_pdf(report: ResearchReport, file_path: str) -> None:
         bottomMargin=2.5 * cm,
     )
 
+    font_name = _get_unicode_font_name()
     styles = getSampleStyleSheet()
+
     h1 = ParagraphStyle(
         "CustomH1",
         parent=styles["Heading1"],
-        fontSize=20,
+        fontName=font_name,
+        fontSize=18,
+        leading=24,
         spaceAfter=12,
     )
     h2 = ParagraphStyle(
         "CustomH2",
         parent=styles["Heading2"],
-        fontSize=14,
-        spaceBefore=18,
+        fontName=font_name,
+        fontSize=13,
+        leading=18,
+        spaceBefore=16,
         spaceAfter=6,
     )
     body = ParagraphStyle(
         "CustomBody",
         parent=styles["Normal"],
-        fontSize=11,
-        leading=14,
+        fontName=font_name,
+        fontSize=10,
+        leading=15,
         spaceAfter=8,
         alignment=TA_LEFT,
     )
     source_style = ParagraphStyle(
         "CustomSource",
         parent=styles["Normal"],
-        fontSize=9.5,
+        fontName=font_name,
+        fontSize=9,
         leading=13.5,
         spaceAfter=6,
         alignment=TA_LEFT,
@@ -279,7 +344,9 @@ def _generate_pdf(report: ResearchReport, file_path: str) -> None:
     footer_style = ParagraphStyle(
         "Footer",
         parent=styles["Normal"],
-        fontSize=9,
+        fontName=font_name,
+        fontSize=8.5,
+        leading=12,
         textColor=styles["Normal"].textColor,
     )
 
