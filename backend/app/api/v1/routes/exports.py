@@ -24,7 +24,13 @@ from app.services.export_service import (
     get_export_record,
     list_exports,
     trigger_export,
+    _generate_pdf,
+    _generate_docx,
+    _generate_markdown,
 )
+from app.models.report import ResearchReport
+from sqlalchemy import select
+import pathlib
 from app.services.report_versioning_service import list_report_versions
 
 logger = logging.getLogger(__name__)
@@ -219,20 +225,51 @@ async def download_export(
 
     abs_path = get_abs_file_path(export)
     if not os.path.exists(abs_path):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Export file not found on disk.",
+        # On ephemeral platforms like Render, automatically regenerate missing files on the fly
+        logger.info("download_export: file %s missing on disk, regenerating on the fly", abs_path)
+        report_res = await db.execute(
+            select(ResearchReport).where(ResearchReport.id == export.report_id)
         )
+        report = report_res.scalar_one_or_none()
+        if report is None:
+            res_rep = await db.execute(
+                select(ResearchReport).where(
+                    ResearchReport.run_id == run_id,
+                    ResearchReport.is_current.is_(True),
+                ).order_by(ResearchReport.version_number.desc()).limit(1)
+            )
+            report = res_rep.scalar_one_or_none()
+
+        if report is not None:
+            pathlib.Path(abs_path).parent.mkdir(parents=True, exist_ok=True)
+            if export.format == "pdf":
+                _generate_pdf(report, abs_path)
+            elif export.format == "docx":
+                _generate_docx(report, abs_path)
+            else:
+                _generate_markdown(report, abs_path)
+            export.file_size_bytes = os.path.getsize(abs_path)
+            await db.commit()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Export file not found on disk and report record could not be located.",
+            )
 
     mime = MIME_TYPES.get(export.format, "application/octet-stream")
     ext = {"pdf": "pdf", "docx": "docx", "markdown": "md"}.get(export.format, "bin")
-    filename = f"research_report.{ext}"
+    filename = f"ARES_Report_{export.id[:8]}.{ext}"
 
     return FileResponse(
         path=abs_path,
         media_type=mime,
         filename=filename,
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
     )
 
 

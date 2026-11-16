@@ -69,13 +69,15 @@ export function ExportPanel({ projectId, runId, reportId, reportVersionNumber }:
     try {
       const record = await triggerExport(projectId, runId, { format, report_id: reportId });
       if (record.download_url) {
-        // Trigger browser download
+        // Trigger browser download with cache-busting timestamp and distinct filename
         const a = document.createElement("a");
         const base = getApiBaseUrl();
-        a.href = record.download_url.startsWith("http")
+        const rawUrl = record.download_url.startsWith("http")
           ? record.download_url
           : `${base}${record.download_url.startsWith("/") ? "" : "/"}${record.download_url}`;
-        a.download = `research_report.${FORMAT_CONFIG[format].ext}`;
+        const separator = rawUrl.includes("?") ? "&" : "?";
+        a.href = `${rawUrl}${separator}t=${Date.now()}`;
+        a.download = `ARES_Report_${record.id.slice(0, 8)}.${FORMAT_CONFIG[format].ext}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -93,11 +95,13 @@ export function ExportPanel({ projectId, runId, reportId, reportVersionNumber }:
     if (!exp.download_url) return;
     const a = document.createElement("a");
     const base = getApiBaseUrl();
-    a.href = exp.download_url.startsWith("http")
+    const rawUrl = exp.download_url.startsWith("http")
       ? exp.download_url
       : `${base}${exp.download_url.startsWith("/") ? "" : "/"}${exp.download_url}`;
+    const separator = rawUrl.includes("?") ? "&" : "?";
+    a.href = `${rawUrl}${separator}t=${Date.now()}`;
     const ext = FORMAT_CONFIG[exp.format as ExportFormat]?.ext ?? exp.format;
-    a.download = `research_report.${ext}`;
+    a.download = `ARES_Report_${exp.id.slice(0, 8)}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
