@@ -96,7 +96,7 @@ export default function TokenTrackerPage() {
           {error && (
             <div className="flex items-center gap-3 p-4 rounded-xl border border-red-500/40 bg-red-950/20 text-red-200 text-xs font-mono">
               <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
-              <span>{error}. Please ensure the backend daemon is running at http://127.0.0.1:8000.</span>
+              <span>{error}. Please ensure the backend API service is active and responsive.</span>
             </div>
           )}
 

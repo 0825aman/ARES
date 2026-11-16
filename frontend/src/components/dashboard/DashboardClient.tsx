@@ -8,16 +8,22 @@ import { StatsRow } from './StatsRow';
 import { RecentProjects } from './RecentProjects';
 import { DashboardEmpty } from './DashboardEmpty';
 import { StatCardSkeleton } from './DashboardSkeleton';
+import { ApiConnectionError } from '@/components/common/ApiConnectionError';
 import { getProjectSummary } from '@/lib/api/projects';
 import type { ProjectSummaryResponse } from '@/lib/types/project';
 
 export function DashboardClient() {
   const [summary, setSummary] = useState<ProjectSummaryResponse | null | 'loading'>('loading');
 
-  useEffect(() => {
+  const loadSummary = () => {
+    setSummary('loading');
     getProjectSummary()
       .then(setSummary)
       .catch(() => setSummary(null));
+  };
+
+  useEffect(() => {
+    loadSummary();
   }, []);
 
   if (summary === 'loading') {
@@ -32,12 +38,7 @@ export function DashboardClient() {
   }
 
   if (summary === null) {
-    return (
-      <div className="rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 py-3 font-mono text-xs text-amber-200 font-semibold">
-        Cannot reach the backend API. Verify the backend daemon is running at{' '}
-        <code className="text-amber-100 underline">localhost:8000</code>, then refresh this view.
-      </div>
-    );
+    return <ApiConnectionError onRetry={loadSummary} />;
   }
 
   if (summary.total === 0) {

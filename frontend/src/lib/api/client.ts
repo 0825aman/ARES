@@ -34,7 +34,11 @@ function normalizeUrl(rawUrl: string): string {
 }
 
 function getServerApiUrl(): string {
-  const url = process.env.API_URL ?? 'http://127.0.0.1:8000';
+  const url =
+    process.env.API_URL ??
+    (process.env.NODE_ENV === 'production'
+      ? 'https://ares-backend-8xa1.onrender.com'
+      : 'http://127.0.0.1:8000');
   return normalizeUrl(url);
 }
 
@@ -70,12 +74,29 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
       ...options,
     });
 
-  let res = await doFetch();
+  let res: Response | null = null;
+  let lastError: unknown = null;
+  const maxAttempts = 3;
 
-  // Single retry on 5xx responses (transient server errors)
-  if (res.status >= 500 && res.status < 600) {
-    await sleep(1000);
-    res = await doFetch();
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      res = await doFetch();
+      // Retry on 502/503/504 (cold start / proxy timeout on free tier)
+      if (res.status >= 502 && res.status <= 504 && attempt < maxAttempts) {
+        await sleep(attempt * 2000);
+        continue;
+      }
+      break;
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxAttempts) {
+        await sleep(attempt * 2000);
+      }
+    }
+  }
+
+  if (!res) {
+    throw (lastError instanceof Error) ? lastError : new Error('Network error connecting to backend API');
   }
 
   if (!res.ok) {

@@ -6,16 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Plus, Terminal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProjectGrid } from './ProjectGrid';
+import { ApiConnectionError } from '@/components/common/ApiConnectionError';
 import { getProjects } from '@/lib/api/projects';
 import type { ProjectListResponse } from '@/lib/types/project';
 
 export function ProjectsClient() {
   const [data, setData] = useState<ProjectListResponse | null | 'loading'>('loading');
 
-  useEffect(() => {
+  const loadProjects = () => {
+    setData('loading');
     getProjects({ limit: 100 })
       .then(setData)
       .catch(() => setData(null));
+  };
+
+  useEffect(() => {
+    loadProjects();
   }, []);
 
   if (data === 'loading') {
@@ -29,12 +35,7 @@ export function ProjectsClient() {
   }
 
   if (data === null) {
-    return (
-      <div className="rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 py-3 font-mono text-xs text-amber-200 font-semibold">
-        Cannot reach the backend API. Verify the backend daemon is running at{' '}
-        <code className="text-amber-100 underline">localhost:8000</code>, then refresh this view.
-      </div>
-    );
+    return <ApiConnectionError onRetry={loadProjects} />;
   }
 
   if (data.total === 0) {

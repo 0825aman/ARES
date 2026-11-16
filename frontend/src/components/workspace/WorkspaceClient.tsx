@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ProjectDetails } from './ProjectDetails';
 import { ResearchPanel } from './ResearchPanel';
 import { WorkspaceHeader } from './WorkspaceHeader';
+import { ApiConnectionError } from '@/components/common/ApiConnectionError';
 import { getProject } from '@/lib/api/projects';
 import { ApiError } from '@/lib/api/client';
 import type { Project } from '@/lib/types/project';
@@ -20,7 +21,8 @@ interface WorkspaceClientProps {
 export function WorkspaceClient({ projectId }: WorkspaceClientProps) {
   const [project, setProject] = useState<Project | null | 'loading' | 'not_found'>('loading');
 
-  useEffect(() => {
+  const loadProject = () => {
+    setProject('loading');
     getProject(projectId)
       .then(setProject)
       .catch((err) => {
@@ -30,6 +32,10 @@ export function WorkspaceClient({ projectId }: WorkspaceClientProps) {
           setProject(null);
         }
       });
+  };
+
+  useEffect(() => {
+    loadProject();
   }, [projectId]);
 
   if (project === 'loading') {
@@ -73,10 +79,7 @@ export function WorkspaceClient({ projectId }: WorkspaceClientProps) {
   if (project === null) {
     return (
       <div className="page-content">
-        <div className="rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 py-3 font-mono text-xs text-amber-200 font-semibold">
-          Cannot reach the backend API. Verify the backend daemon is running at{' '}
-          <code className="text-amber-100 underline">localhost:8000</code>, then refresh this view.
-        </div>
+        <ApiConnectionError onRetry={loadProject} />
       </div>
     );
   }
