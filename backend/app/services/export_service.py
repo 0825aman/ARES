@@ -238,17 +238,22 @@ def _get_unicode_font_name() -> str:
     Falls back gracefully to Helvetica if no TrueType font is found.
     """
     global _UNICODE_FONT_NAME
-    if _UNICODE_FONT_NAME:
+    if _UNICODE_FONT_NAME and _UNICODE_FONT_NAME != "Helvetica":
         return _UNICODE_FONT_NAME
 
     try:
         from reportlab.pdfbase import pdfmetrics
         from reportlab.pdfbase.ttfonts import TTFont
 
-        base_dir = pathlib.Path(__file__).parent.parent
+        curr_file = pathlib.Path(__file__).resolve()
+        base_dir = curr_file.parent.parent
         candidates = [
             # 1. Bundled universal FreeSerif (covers 8,000+ glyphs including Devanagari/Hindi)
             base_dir / "assets" / "fonts" / "FreeSerif.ttf",
+            pathlib.Path("app/assets/fonts/FreeSerif.ttf").resolve(),
+            pathlib.Path("backend/app/assets/fonts/FreeSerif.ttf").resolve(),
+            pathlib.Path("/opt/render/project/src/backend/app/assets/fonts/FreeSerif.ttf"),
+            pathlib.Path("/opt/render/project/src/app/assets/fonts/FreeSerif.ttf"),
             # 2. Linux system fonts (Debian/Ubuntu/Render)
             pathlib.Path("/usr/share/fonts/truetype/freefont/FreeSerif.ttf"),
             pathlib.Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
@@ -282,6 +287,7 @@ def _get_unicode_font_name() -> str:
     except Exception as exc:
         logger.warning("export_service: error during Unicode font setup: %s", exc)
 
+    logger.warning("export_service: NO Unicode font found among candidates! Falling back to Helvetica.")
     _UNICODE_FONT_NAME = "Helvetica"
     return "Helvetica"
 
