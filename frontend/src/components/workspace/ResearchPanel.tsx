@@ -21,6 +21,7 @@ import { LiveBadge } from './LiveBadge';
 import { useSSE } from '@/lib/hooks/useSSE';
 import {
   getRuns,
+  getRun,
   getReport,
   getSources,
   getEvidence,
@@ -263,6 +264,33 @@ export function ResearchPanel({ projectId, researchQuestion }: ResearchPanelProp
       },
     },
   );
+
+  // ── Active run polling synchronization (2.5s) ──────────────────────────────
+  // Guarantees real-time progress, stage updates, and counts even if SSE drops,
+  // connects through a buffered proxy, or misses packet bursts.
+  useEffect(() => {
+    if (state !== 'active' || !activeRun) return;
+
+    let cancelled = false;
+    const pollInterval = setInterval(async () => {
+      try {
+        const updated = await getRun(projectId, activeRun.id);
+        if (cancelled) return;
+        setActiveRun((prev) => (prev ? { ...prev, ...updated } : updated));
+        setLiveRun((prev) => (prev ? { ...prev, ...updated } : updated));
+        if (updated.status === 'completed' || updated.status === 'failed') {
+          loadRuns();
+        }
+      } catch {
+        // Ignore transient poll failures
+      }
+    }, 2500);
+
+    return () => {
+      cancelled = true;
+      clearInterval(pollInterval);
+    };
+  }, [state, activeRun?.id, projectId, loadRuns]);
 
   // ── Lazy loaders ───────────────────────────────────────────────────────────
 

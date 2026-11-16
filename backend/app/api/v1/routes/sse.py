@@ -196,7 +196,15 @@ async def stream_run_events(
         except (ValueError, IndexError):
             last_seq = None
 
-    return EventSourceResponse(_build_event_generator(run_id, last_seq=last_seq))
+    sse_headers = {
+        "Cache-Control": "no-cache, no-transform",
+        "X-Accel-Buffering": "no",
+        "Connection": "keep-alive",
+    }
+    return EventSourceResponse(
+        _build_event_generator(run_id, last_seq=last_seq),
+        headers=sse_headers,
+    )
 
 
 async def _heartbeat_producer(queue: asyncio.Queue) -> None:

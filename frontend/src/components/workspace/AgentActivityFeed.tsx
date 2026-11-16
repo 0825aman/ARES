@@ -16,7 +16,7 @@ import { getActivity } from '@/lib/api/runs';
 import type { AgentEvent } from '@/lib/types/run';
 
 const MAX_EVENTS = 250;
-const FALLBACK_POLL_INTERVAL = 60_000;
+const POLL_INTERVAL = 3000;
 
 interface AgentActivityFeedProps {
   projectId: string;
@@ -121,28 +121,31 @@ export function AgentActivityFeed({
     };
   }, [projectId, runId]);
 
-  // ── 60-second fallback polling ──────────────────────────────────────────
+  // ── Active polling (3s) ─────────────────────────────────────────────────
   useEffect(() => {
-    if (sseConnected || runCompleted) return;
+    if (runCompleted) return;
 
     let cancelled = false;
     const interval = setInterval(async () => {
       try {
         const data = await getActivity(projectId, runId, 250);
-        if (!cancelled) {
-          setEvents(data.events.slice(-MAX_EVENTS));
+        if (!cancelled && data.events.length > 0) {
+          setEvents((prev) => {
+            const merged = deduplicateEvents([...prev, ...data.events]);
+            return merged.length > MAX_EVENTS ? merged.slice(merged.length - MAX_EVENTS) : merged;
+          });
           setTotal(data.total);
         }
       } catch {
         // backend unreachable — keep trying
       }
-    }, FALLBACK_POLL_INTERVAL);
+    }, POLL_INTERVAL);
 
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [projectId, runId, sseConnected, runCompleted]);
+  }, [projectId, runId, runCompleted]);
 
   // ── Merge live SSE events ───────────────────────────────────────────────
   useEffect(() => {

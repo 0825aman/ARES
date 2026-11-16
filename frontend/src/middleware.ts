@@ -18,18 +18,22 @@ const SESSION_COOKIE = 'ares_session';
 const LEGACY_SESSION_COOKIE = 'maar_session';
 
 /** Routes that never require authentication. */
-const PUBLIC_PATHS = new Set(['/login']);
+const PUBLIC_PATHS = new Set(['/login', '/ares-logo.png', '/ares-reveal.webm', '/favicon.ico']);
 
 /** Prefixes that are always public (static assets, etc.). */
-const PUBLIC_PREFIXES = ['/_next/', '/favicon'];
+const PUBLIC_PREFIXES = ['/_next/', '/favicon', '/api/v1/health'];
+
+/** Regex matching any static asset filename with an extension */
+const STATIC_ASSET_REGEX = /\.(png|jpe?g|gif|svg|webp|webm|mp4|ico|woff2?|ttf|eot|css|js|map|json|txt|csv|pdf)$/i;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow static assets and explicitly public paths
+  // Allow static assets, media files, and explicitly public paths
   if (
     PUBLIC_PATHS.has(pathname) ||
-    PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+    PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    STATIC_ASSET_REGEX.test(pathname)
   ) {
     return NextResponse.next();
   }
@@ -55,11 +59,14 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   /*
-   * Match all paths except Next.js internals and static files.
+   * Match all paths except Next.js internals, static assets, and media files.
    * The pattern below excludes:
    *   - _next/static (static assets)
    *   - _next/image (image optimization)
    *   - favicon.ico
+   *   - all static files with extensions (e.g., .png, .webm, .svg, .ico, etc.)
    */
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|webm|mp4|ico|woff2?|ttf|eot|css|js|map|json|txt|csv|pdf)$).*)',
+  ],
 };

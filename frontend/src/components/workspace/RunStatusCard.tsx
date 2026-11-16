@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { getRun } from '@/lib/api/runs';
 import type { ResearchRun } from '@/lib/types/run';
 
-const FALLBACK_POLL_INTERVAL = 60_000;
+const POLL_INTERVAL = 3000;
 
 const STAGES = [
   'Initializing',
@@ -26,9 +26,10 @@ function stageIndex(stage: string | null): number {
   return idx >= 0 ? idx : 0;
 }
 
-function formatElapsed(startedAt: string | null): string {
-  if (!startedAt) return '00:00';
-  const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+function formatElapsed(startedAt: string | null, createdAt?: string | null): string {
+  const ref = startedAt || createdAt;
+  if (!ref) return '00:00';
+  const elapsed = Math.max(0, Math.floor((Date.now() - new Date(ref).getTime()) / 1000));
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -64,17 +65,17 @@ export function RunStatusCard({
   }, [liveRun]);
 
   useEffect(() => {
-    setElapsed(formatElapsed(run.started_at));
+    setElapsed(formatElapsed(run.started_at, run.created_at));
     const ticker = setInterval(() => {
-      setElapsed(formatElapsed(run.started_at));
+      setElapsed(formatElapsed(run.started_at, run.created_at));
     }, 1000);
     return () => clearInterval(ticker);
-  }, [run.started_at]);
+  }, [run.started_at, run.created_at]);
 
   useEffect(() => {
     const isActive =
       run.status === 'pending' || run.status === 'running' || run.status === 'awaiting_approval';
-    if (sseConnected || !isActive) return;
+    if (!isActive) return;
 
     const interval = setInterval(async () => {
       try {
@@ -91,10 +92,10 @@ export function RunStatusCard({
       } catch {
         // backend unreachable — keep polling
       }
-    }, FALLBACK_POLL_INTERVAL);
+    }, POLL_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [run.id, run.status, projectId, sseConnected, router]);
+  }, [run.id, run.status, projectId, router]);
 
   const prevStatusRef = useRef(run.status);
   useEffect(() => {

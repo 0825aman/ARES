@@ -163,7 +163,7 @@ function TaskRow({ task, index }: { task: ResearchTask; index: number }) {
 export function ResearchPlanView({
   projectId,
   runId,
-  pollingInterval = 4000,
+  pollingInterval = 3000,
 }: ResearchPlanViewProps) {
   const [plan, setPlan] = useState<ResearchPlan | null>(null);
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RefreshCw, Radio, AlertCircle } from 'lucide-react';
+import { RefreshCw, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ApiConnectionErrorProps {

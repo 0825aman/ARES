@@ -21,7 +21,7 @@ import { ResearchPlanView } from './ResearchPlanView';
 import { AgentActivityFeed } from './AgentActivityFeed';
 import type { ResearchRun, AgentEvent } from '@/lib/types/run';
 
-const FALLBACK_POLL_INTERVAL = 60_000;
+const POLL_INTERVAL = 3000;
 
 interface StageDefinition {
   id: string;
@@ -50,9 +50,10 @@ function stageIndex(stage: string | null): number {
   return 0;
 }
 
-function formatElapsed(startedAt: string | null): string {
-  if (!startedAt) return '00:00';
-  const elapsed = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+function formatElapsed(startedAt: string | null, createdAt?: string | null): string {
+  const ref = startedAt || createdAt;
+  if (!ref) return '00:00';
+  const elapsed = Math.max(0, Math.floor((Date.now() - new Date(ref).getTime()) / 1000));
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -89,17 +90,17 @@ export function MultiAgentStatusCard({
   }, [liveRun]);
 
   useEffect(() => {
-    setElapsed(formatElapsed(run.started_at));
+    setElapsed(formatElapsed(run.started_at, run.created_at));
     const ticker = setInterval(() => {
-      setElapsed(formatElapsed(run.started_at));
+      setElapsed(formatElapsed(run.started_at, run.created_at));
     }, 1000);
     return () => clearInterval(ticker);
-  }, [run.started_at]);
+  }, [run.started_at, run.created_at]);
 
   useEffect(() => {
     const isActiveStatus =
       run.status === 'pending' || run.status === 'running' || run.status === 'awaiting_approval';
-    if (sseConnected || !isActiveStatus) return;
+    if (!isActiveStatus) return;
 
     const interval = setInterval(async () => {
       try {
@@ -112,10 +113,10 @@ export function MultiAgentStatusCard({
       } catch {
         // backend unreachable — keep polling
       }
-    }, FALLBACK_POLL_INTERVAL);
+    }, POLL_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [run.id, run.status, projectId, sseConnected]);
+  }, [run.id, run.status, projectId]);
 
   const prevStatusRef = useRef(run.status);
   useEffect(() => {
@@ -313,7 +314,7 @@ export function MultiAgentStatusCard({
       <ResearchPlanView
         projectId={projectId}
         runId={run.id}
-        pollingInterval={isActive ? 60000 : 60000}
+        pollingInterval={isActive ? 3000 : 10000}
       />
 
       {/* Agent activity timeline */}
