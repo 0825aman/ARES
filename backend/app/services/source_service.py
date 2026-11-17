@@ -65,16 +65,19 @@ async def create_source_from_result(
     else:
         source_type = "web"
 
+    clean_title = (result.title.replace("\x00", "") if result.title else None)
+    clean_url = (result.url.replace("\x00", "") if result.url else None)
+    clean_venue = (result.venue.replace("\x00", "") if result.venue else None)
     source = Source(
         id=str(uuid.uuid4()),
         run_id=run_id,
         source_type=source_type,
-        title=result.title or None,
-        url=result.url or None,
+        title=clean_title,
+        url=clean_url,
         doi=result.doi,
         authors=json.dumps(result.authors) if result.authors else None,
         publisher=None,
-        venue=result.venue,
+        venue=clean_venue,
         publication_date=result.published_date,
         is_peer_reviewed=result.is_peer_reviewed,
         retrieval_provider=retrieval_provider,

@@ -17,7 +17,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.models.base import Base
 
@@ -63,3 +63,9 @@ class Source(Base):
     run: Mapped["ResearchRun"] = relationship(  # type: ignore[name-defined]  # noqa: F821
         "ResearchRun", back_populates="sources"
     )
+
+    @validates("title", "url", "authors", "publisher", "venue", "credibility_notes", "metadata_json")
+    def _validate_clean_text(self, key: str, value: str | None) -> str | None:
+        if isinstance(value, str) and "\x00" in value:
+            return value.replace("\x00", "")
+        return value

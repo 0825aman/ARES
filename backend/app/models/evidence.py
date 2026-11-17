@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -88,3 +88,9 @@ class EvidenceRecord(Base):
     chunk: Mapped["DocumentChunk | None"] = relationship(  # type: ignore[name-defined]  # noqa: F821
         "DocumentChunk",
     )
+
+    @validates("content", "page_title", "url", "section_name", "fetch_error", "source_label")
+    def _validate_clean_text(self, key: str, value: str | None) -> str | None:
+        if isinstance(value, str) and "\x00" in value:
+            return value.replace("\x00", "")
+        return value

@@ -28,6 +28,18 @@ class NormalizedEvidence:
     extraction_method: str | None = None
     extraction_confidence: float | None = None
 
+    def __post_init__(self) -> None:
+        if self.content and "\x00" in self.content:
+            self.content = self.content.replace("\x00", "")
+        if self.page_title and "\x00" in self.page_title:
+            self.page_title = self.page_title.replace("\x00", "")
+        if self.url and "\x00" in self.url:
+            self.url = self.url.replace("\x00", "")
+        if self.source_label and "\x00" in self.source_label:
+            self.source_label = self.source_label.replace("\x00", "")
+        if self.section_name and "\x00" in self.section_name:
+            self.section_name = self.section_name.replace("\x00", "")
+
 
 def score_relevance(content: str, research_question: str) -> float:
     """Simple token overlap relevance score between 0.0 and 1.0."""
@@ -45,9 +57,9 @@ def score_relevance(content: str, research_question: str) -> float:
 def normalize_web_result(url: str, title: str | None, content: str) -> NormalizedEvidence:
     return NormalizedEvidence(
         source_type="web",
-        content=content,
-        url=url,
-        page_title=title,
+        content=(content or "").replace("\x00", ""),
+        url=(url or "").replace("\x00", ""),
+        page_title=title.replace("\x00", "") if title else None,
         retrieved_at=datetime.now(timezone.utc),
     )
 
@@ -61,9 +73,9 @@ def normalize_document_chunk(
 ) -> NormalizedEvidence:
     return NormalizedEvidence(
         source_type="document",
-        content=chunk_text,
+        content=(chunk_text or "").replace("\x00", ""),
         document_id=document_id,
-        filename=filename,
+        filename=filename.replace("\x00", "") if filename else filename,
         chunk_index=chunk_index,
         page_number=page_number,
     )

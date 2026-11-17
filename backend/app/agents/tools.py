@@ -163,7 +163,7 @@ async def get_document_chunks(
                 try:
                     reader = PdfReader(BytesIO(file_data))
                     pages_text = [
-                        page.extract_text() or ""
+                        (page.extract_text() or "").replace("\x00", "")
                         for page in reader.pages
                     ]
                     full_text = "\n\n".join(t.strip() for t in pages_text if t.strip())
@@ -174,11 +174,11 @@ async def get_document_chunks(
             elif ext == "docx":
                 from docx import Document as DocxDocument
                 docx_doc = DocxDocument(BytesIO(file_data))
-                paragraphs = [p.text.strip() for p in docx_doc.paragraphs if p.text.strip()]
+                paragraphs = [p.text.replace("\x00", "").strip() for p in docx_doc.paragraphs if p.text.strip()]
                 full_text = "\n".join(paragraphs)
 
             elif ext == "txt":
-                full_text = file_data.decode("utf-8", errors="replace")
+                full_text = file_data.decode("utf-8", errors="replace").replace("\x00", "")
 
             else:
                 logger.warning("get_document_chunks: unsupported format %s for doc %s", ext, doc.id)

@@ -344,16 +344,21 @@ async def research_node(
 
                 evidence_records: list = []
                 for ev in all_evidence:
+                    content_clean = (ev.content or "").replace("\x00", "")
+                    title_clean = ev.page_title.replace("\x00", "") if ev.page_title else None
+                    url_clean = ev.url.replace("\x00", "") if ev.url else None
+                    section_clean = ev.section_name.replace("\x00", "") if ev.section_name else None
+                    label_clean = (ev.source_label or "").replace("\x00", "")
                     record = EvidenceRecord(
                         id=str(uuid.uuid4()),
                         run_id=run_id,
                         source_type=ev.source_type,
-                        source_label=ev.source_label or "",
-                        content=ev.content,
+                        source_label=label_clean,
+                        content=content_clean,
                         relevance_score=ev.relevance_score,
                         fetch_status="success",
-                        url=ev.url,
-                        page_title=ev.page_title,
+                        url=url_clean,
+                        page_title=title_clean,
                         retrieved_at=ev.retrieved_at,
                         document_id=ev.document_id,
                         chunk_index=ev.chunk_index,
@@ -364,7 +369,7 @@ async def research_node(
                         # Phase 4 M4.3 defaults (enriched below)
                         evidence_type=ev.evidence_type,
                         evidence_relationship=ev.evidence_relationship,
-                        section_name=ev.section_name,
+                        section_name=section_clean,
                         extraction_method=ev.extraction_method,
                         extraction_confidence=ev.extraction_confidence,
                     )

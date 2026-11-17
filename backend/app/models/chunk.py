@@ -19,7 +19,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.models.base import Base
 
@@ -55,3 +55,9 @@ class DocumentChunk(Base):
     document: Mapped["UploadedDocument"] = relationship(  # type: ignore[name-defined]  # noqa: F821
         "UploadedDocument", back_populates="chunks"
     )
+
+    @validates("text", "section_title")
+    def _validate_clean_text(self, key: str, value: str | None) -> str | None:
+        if isinstance(value, str) and "\x00" in value:
+            return value.replace("\x00", "")
+        return value

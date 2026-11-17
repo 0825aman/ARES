@@ -4,8 +4,8 @@ import ssl
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy import event
-from sqlalchemy.types import DateTime as SqlDateTime
-from sqlalchemy.dialects.postgresql.asyncpg import AsyncpgDateTime
+from sqlalchemy.types import DateTime as SqlDateTime, String as SqlString
+from sqlalchemy.dialects.postgresql.asyncpg import AsyncpgDateTime, AsyncpgString
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncEngine,
@@ -42,6 +42,44 @@ def _patch_asyncpg_datetime() -> None:
 
 
 _patch_asyncpg_datetime()
+
+
+# Automatically strip null bytes (0x00) from all strings bound to PostgreSQL/asyncpg,
+# avoiding:
+# "(sqlalchemy.dialects.postgresql.asyncpg.Error) invalid byte sequence for encoding 'UTF8': 0x00"
+def _patch_asyncpg_strings() -> None:
+    _orig_string_bp = SqlString.bind_processor
+    _orig_asyncpg_bp = AsyncpgString.bind_processor
+
+    def _string_bind_processor(self, dialect):
+        orig = _orig_string_bp(self, dialect)
+
+        def process(value):
+            if orig is not None:
+                value = orig(value)
+            if isinstance(value, str) and "\x00" in value:
+                return value.replace("\x00", "")
+            return value
+
+        return process
+
+    def _asyncpg_string_bind_processor(self, dialect):
+        orig = _orig_asyncpg_bp(self, dialect)
+
+        def process(value):
+            if orig is not None:
+                value = orig(value)
+            if isinstance(value, str) and "\x00" in value:
+                return value.replace("\x00", "")
+            return value
+
+        return process
+
+    SqlString.bind_processor = _string_bind_processor
+    AsyncpgString.bind_processor = _asyncpg_string_bind_processor
+
+
+_patch_asyncpg_strings()
 
 
 def configure_sqlite_pragmas(

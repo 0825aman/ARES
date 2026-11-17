@@ -39,6 +39,18 @@ class SearchResult:
     venue: str | None = None              # journal / conference name
     is_peer_reviewed: bool = False        # arXiv preprints → always False
 
+    def __post_init__(self) -> None:
+        if self.url and "\x00" in self.url:
+            self.url = self.url.replace("\x00", "")
+        if self.title and "\x00" in self.title:
+            self.title = self.title.replace("\x00", "")
+        if self.snippet and "\x00" in self.snippet:
+            self.snippet = self.snippet.replace("\x00", "")
+        if self.content and "\x00" in self.content:
+            self.content = self.content.replace("\x00", "")
+        if self.venue and "\x00" in self.venue:
+            self.venue = self.venue.replace("\x00", "")
+
 
 class WebSearchProvider(ABC):
     @abstractmethod

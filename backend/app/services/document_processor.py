@@ -166,7 +166,7 @@ def _extract_pdf(file_data: bytes) -> _ExtractionResult:
     pages_text: list[str] = []
     total_chars = 0
     for page in reader.pages:
-        text = page.extract_text() or ""
+        text = (page.extract_text() or "").replace("\x00", "")
         pages_text.append(text)
         total_chars += len(text.strip())
 
@@ -221,8 +221,8 @@ def _extract_docx(file_data: bytes) -> _ExtractionResult:
         return result
 
     for para in docx_doc.paragraphs:
-        style_name = para.style.name if para.style else ""
-        text = para.text.strip()
+        style_name = (para.style.name or "").replace("\x00", "") if para.style else ""
+        text = para.text.replace("\x00", "").strip()
         if not text:
             continue
 
@@ -268,7 +268,7 @@ def _extract_docx(file_data: bytes) -> _ExtractionResult:
 
 def _extract_txt(file_data: bytes) -> _ExtractionResult:
     """Extract text from a plain UTF-8 text file."""
-    text = file_data.decode("utf-8", errors="replace")
+    text = file_data.decode("utf-8", errors="replace").replace("\x00", "")
     if not text.strip():
         return _ExtractionResult(chunks=[], has_images=False, ocr_attempted=False)
     chunks = _split_plain(text, "plain-text")

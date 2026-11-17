@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.models.base import Base
 
@@ -61,3 +61,13 @@ class ResearchReport(Base):
         cascade="all, delete-orphan",
         order_by="ReportVersion.version_number",
     )
+
+    @validates(
+        "research_question", "executive_summary", "key_findings",
+        "evidence_used", "observations", "contradictions", "limitations",
+        "sources", "raw_llm_response"
+    )
+    def _validate_clean_text(self, key: str, value: str | None) -> str | None:
+        if isinstance(value, str) and "\x00" in value:
+            return value.replace("\x00", "")
+        return value

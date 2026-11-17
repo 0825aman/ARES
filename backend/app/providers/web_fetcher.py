@@ -124,6 +124,11 @@ async def fetch_url(url: str, timeout: int, max_content_kb: int) -> tuple[str | 
         if not content or len(content.strip()) < 100:
             return None, None
 
+        if content and "\x00" in content:
+            content = content.replace("\x00", "")
+        if title and "\x00" in title:
+            title = title.replace("\x00", "")
+
         max_chars = max_content_kb * 1024
         return title, content[:max_chars]
 
